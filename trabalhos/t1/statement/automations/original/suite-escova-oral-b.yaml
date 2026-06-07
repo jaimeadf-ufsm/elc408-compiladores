@@ -1,0 +1,50 @@
+- id: '1777217946260'
+  alias: Suíte - escova Oral-B
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.triumph_v2_90f2
+    to:
+    - charging
+    id: charging
+  - trigger: state
+    entity_id:
+    - sensor.triumph_v2_90f2
+    to:
+    - idle
+    id: idle
+  - trigger: state
+    entity_id:
+    - sensor.triumph_v2_90f2
+    to:
+    - running
+    id: running
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - idle
+      sequence:
+      - type: turn_off
+        device_id: 1bb0a2df63cc0b8cb75be4e7f5a21f8e
+        entity_id: 1f44a726233f4ea71a519484b6d6e1da
+        domain: light
+    - conditions:
+      - condition: trigger
+        id:
+        - running
+      sequence:
+      - type: turn_on
+        device_id: 1bb0a2df63cc0b8cb75be4e7f5a21f8e
+        entity_id: 1f44a726233f4ea71a519484b6d6e1da
+        domain: light
+        brightness_pct: 20
+    - conditions:
+      - condition: trigger
+        id:
+        - charging
+      sequence: []
+  mode: single

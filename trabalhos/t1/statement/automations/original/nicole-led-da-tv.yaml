@@ -1,0 +1,46 @@
+- id: '1723000656841'
+  alias: 'Nicole - LED da TV '
+  description: ''
+  triggers:
+  - type: turned_off
+    device_id: 275d68e2aa61f9229082505ddab26cd2
+    entity_id: e26d13dc064b552d0c4c5b1401328d9a
+    domain: switch
+    trigger: device
+    id: 'Desativado '
+  - type: turned_on
+    device_id: 275d68e2aa61f9229082505ddab26cd2
+    entity_id: e26d13dc064b552d0c4c5b1401328d9a
+    domain: switch
+    trigger: device
+    id: Ativado
+  conditions:
+  - condition: device
+    type: is_off
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: bb97c45f407329aca067d3f274499a81
+    domain: switch
+    enabled: false
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - 'Desativado '
+    then:
+    - type: turn_off
+      device_id: 01f2c119ba10ffd80fe535d4c03ec09e
+      entity_id: d8598c0f4effd9848ca64cd9981f14f9
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Ativado
+    then:
+    - type: turn_on
+      device_id: 01f2c119ba10ffd80fe535d4c03ec09e
+      entity_id: d8598c0f4effd9848ca64cd9981f14f9
+      domain: switch
+  mode: single

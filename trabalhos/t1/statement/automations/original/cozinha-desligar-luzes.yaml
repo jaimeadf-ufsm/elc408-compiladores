@@ -1,0 +1,43 @@
+- id: '1765403263723'
+  alias: Cozinha - desligar luzes
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: a596cab20ebb4bdb5d8ce1a5f176beca
+    entity_id: d51d48f52a856d2a87a080b71d23ff20
+    domain: light
+  - type: turn_off
+    device_id: 823dddc78874dd3987cd14188b78a5a3
+    entity_id: 07ee905d710ace9fac2d8121924bcd15
+    domain: light
+  - type: turn_off
+    device_id: 4b787a0be0d44cb91d15949617798e17
+    entity_id: 976f5231d4889cf3165bc14dc157bbef
+    domain: switch
+  - type: turn_off
+    device_id: 2d31979b9a2d8869e39e4be05804dc21
+    entity_id: f3e4348b0f9c6ea0e601151a41f13e8e
+    domain: light
+  - type: toggle
+    device_id: 44759ed71b0f6a82bcc65d2e33efa4a6
+    entity_id: e042f1604e0dc36207b629524f5b3633
+    domain: light
+  - type: turn_off
+    device_id: e17778418e70c81f4049b5b2a9165fde
+    entity_id: be630987e593594bf93e47138507f2f1
+    domain: switch
+  - type: turn_off
+    device_id: c788817b260ac191cc8f971e09cf00ec
+    entity_id: f3bc1ca66e44276249fe6e63bf0ef281
+    domain: light
+  - type: turn_off
+    device_id: a3413a0d4128053a16d6a63098d40839
+    entity_id: c6be082d1cb3b4d93d99cdda332086f9
+    domain: switch
+  - type: turn_off
+    device_id: 8bab4f915657ed4ea1b1151603b2b9e9
+    entity_id: 2a3fe028eb0da3f11e73437fe3b34b5d
+    domain: switch
+  mode: single

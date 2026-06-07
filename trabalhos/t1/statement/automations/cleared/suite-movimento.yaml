@@ -1,0 +1,69 @@
+- id: '1749434533565'
+  alias: Suite - Movimento
+  description: ''
+  triggers:
+    - trigger: state
+      entity_id: timer.suite
+      to: idle
+      id: Ocioso
+    - trigger: state
+      entity_id: timer.suite
+      to: active
+      id: Movimento
+    - trigger: state
+      entity_id: binary_sensor.40cb89
+      to: "on"
+      id: Movimento cama
+    - trigger: state
+      entity_id: binary_sensor.sonoff_a440036eb8
+      to: "on"
+      id: Detector
+  conditions:
+    - condition: state
+      entity_id: alarm_control_panel.alarmo
+      state: disarmed
+  actions:
+    - if:
+        - condition: trigger
+          id:
+            - Movimento
+            - Movimento cama
+            - Detector
+      then:
+        - action: timer.start
+          target:
+            entity_id: timer.suite
+        - if:
+            - condition: state
+              entity_id: switch.bb97c4
+              state: "off"
+            - condition: state
+              entity_id: alarm_control_panel.alarmo
+              state: disarmed
+          then:
+            - action: light.turn_on
+              target:
+                entity_id: light.73f3f4
+    - if:
+        - condition: trigger
+          id: Ocioso
+      then:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.e6bd5f
+        - delay: "00:00:30"
+        - action: light.turn_off
+          target:
+            entity_id: light.arandela_suite
+        - delay: "00:00:30"
+        - action: light.turn_off
+          target:
+            entity_id: light.arandela_suite
+        - action: switch.turn_off
+          target:
+            entity_id: switch.726fc9
+        - delay: "00:00:30"
+        - action: switch.turn_off
+          target:
+            entity_id: switch.luzes_da_suite
+  mode: restart

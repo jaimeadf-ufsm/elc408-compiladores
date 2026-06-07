@@ -1,0 +1,41 @@
+- id: '1724530319511'
+  alias: Lavabo - 3o Botão Interruptor
+  description: ''
+  triggers:
+    - trigger: state
+      entity_id: switch.8aa7f9
+      to: "on"
+      id: Liga
+    - trigger: state
+      entity_id: switch.8aa7f9
+      to: "off"
+      id: Desliga
+  conditions:
+    - condition: state
+      entity_id: alarm_control_panel.alarmo
+      state: disarmed
+  actions:
+    - if:
+        - condition: trigger
+          id: Liga
+      then:
+        - action: switch.turn_on
+          target:
+            entity_id:
+              - switch.espelho_do_lavabo
+              - switch.sonoff_100200129d_2
+    - if:
+        - condition: trigger
+          id: Desliga
+      then:
+        - action: switch.turn_off
+          target:
+            entity_id:
+              - switch.sonoff_100200129d_1
+              - switch.sonoff_100200129d_2
+              - switch.sonoff_100200129d_3
+              - switch.espelho_do_lavabo
+        - action: notify.mobile_app_zfold4
+          data:
+            message: Lavabo
+  mode: restart

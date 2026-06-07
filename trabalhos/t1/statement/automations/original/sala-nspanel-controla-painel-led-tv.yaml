@@ -1,0 +1,45 @@
+- id: '1725804544440'
+  alias: Sala - NSPanel controla painel LED TV
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 8bab4f915657ed4ea1b1151603b2b9e9
+    entity_id: 2a3fe028eb0da3f11e73437fe3b34b5d
+    domain: switch
+    id: Ligado
+    trigger: device
+  - alias: 'Desativado '
+    type: turned_off
+    device_id: 8bab4f915657ed4ea1b1151603b2b9e9
+    entity_id: 2a3fe028eb0da3f11e73437fe3b34b5d
+    domain: switch
+    id: Desligado
+    trigger: device
+  conditions:
+  - condition: device
+    device_id: 5e51e34745f04cf7f80d7a374d922d6f
+    domain: alarm_control_panel
+    entity_id: 37dc24654a788314bfb4de2e2c827fd0
+    type: is_disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Ligado
+    then:
+    - action: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.sonoff_1001e0dd5a_1
+  - if:
+    - condition: trigger
+      id:
+      - Desligado
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_1001e0dd5a_1
+      data: {}
+  mode: single

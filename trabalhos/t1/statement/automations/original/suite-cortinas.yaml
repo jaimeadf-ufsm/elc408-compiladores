@@ -1,0 +1,36 @@
+- id: '1766001484689'
+  alias: Suíte - cortinas
+  description: ''
+  triggers:
+  - trigger: time
+    at: 22:30:00
+    id: Abrir blackout
+  - trigger: time
+    at: 12:30:00
+    id: Abrir cortina
+  conditions:
+  - condition: device
+    device_id: 5e51e34745f04cf7f80d7a374d922d6f
+    domain: alarm_control_panel
+    entity_id: 37dc24654a788314bfb4de2e2c827fd0
+    type: is_disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Abrir blackout
+    then:
+    - device_id: ed32516b10312da4a71c0ceaad8b66c4
+      domain: cover
+      entity_id: 8e38e2f9b76939a6c380fad9428f1fd0
+      type: open
+  - if:
+    - condition: trigger
+      id:
+      - Abrir cortina
+    then:
+    - device_id: ed32516b10312da4a71c0ceaad8b66c4
+      domain: cover
+      entity_id: 8e38e2f9b76939a6c380fad9428f1fd0
+      type: close
+  mode: single

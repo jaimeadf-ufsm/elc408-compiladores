@@ -1,0 +1,67 @@
+- id: '1741568290357'
+  alias: Corredor - chave hotel
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: d8e4c9d44f0588ccf8c0fe1a1e7afd7a
+    entity_id: 73bd5ca47e3ec3a9bc6a463e0ae0dc98
+    domain: switch
+    trigger: device
+    id: Tuya on
+  - type: turned_off
+    device_id: d8e4c9d44f0588ccf8c0fe1a1e7afd7a
+    entity_id: 73bd5ca47e3ec3a9bc6a463e0ae0dc98
+    domain: switch
+    trigger: device
+    id: Tuya off
+  - type: turned_on
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: dac219311283b7d5262d710d8f61b278
+    domain: switch
+    trigger: device
+    id: Sonoff on
+  - type: turned_off
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: dac219311283b7d5262d710d8f61b278
+    domain: switch
+    trigger: device
+    id: Sonoff off
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Tuya off
+    then:
+    - type: turn_off
+      device_id: 17577b83efd0951c4002cd6c7b91053c
+      entity_id: dac219311283b7d5262d710d8f61b278
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Tuya on
+    then:
+    - type: turn_on
+      device_id: 17577b83efd0951c4002cd6c7b91053c
+      entity_id: dac219311283b7d5262d710d8f61b278
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Sonoff off
+    then:
+    - type: turn_off
+      device_id: d8e4c9d44f0588ccf8c0fe1a1e7afd7a
+      entity_id: 73bd5ca47e3ec3a9bc6a463e0ae0dc98
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Sonoff on
+    then:
+    - type: turn_on
+      device_id: d8e4c9d44f0588ccf8c0fe1a1e7afd7a
+      entity_id: 73bd5ca47e3ec3a9bc6a463e0ae0dc98
+      domain: switch
+  mode: single

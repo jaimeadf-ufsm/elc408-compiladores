@@ -1,0 +1,1636 @@
+- id: '1722215033727'
+  alias: Corda Corredor - movimento
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.corredor_suite_luminance_motion_sensor_movimento
+    - binary_sensor.tz3000_6ygjfyll_ts0202
+    - binary_sensor.motion_sensor_movimento
+    to:
+    - 'on'
+    trigger: state
+  conditions:
+  - condition: device
+    type: is_on
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: bb97c45f407329aca067d3f274499a81
+    domain: switch
+  - condition: device
+    device_id: 5e51e34745f04cf7f80d7a374d922d6f
+    domain: alarm_control_panel
+    entity_id: 37dc24654a788314bfb4de2e2c827fd0
+    type: is_disarmed
+  - condition: state
+    entity_id: light.corda_led_corredor
+    state: 'off'
+  actions:
+  - type: turn_on
+    device_id: fbbfb3abd57bee6b19cc076ec0fd1b49
+    entity_id: a4595b3013d5c452494f933e1e104129
+    domain: light
+  - if:
+    - condition: time
+      after: 01:15:00
+      before: '12:00:00'
+    then:
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 45
+        milliseconds: 0
+    else:
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 45
+        milliseconds: 0
+  - type: turn_off
+    device_id: fbbfb3abd57bee6b19cc076ec0fd1b49
+    entity_id: a4595b3013d5c452494f933e1e104129
+    domain: light
+  mode: restart
+- id: '1722807263818'
+  alias: Por do Sol
+  description: 'Liga dispositivos em horários diferentes dependendo do clima (Chuva:
+    -1h30, Nublado: -1h15, Sol: -45min)'
+  triggers:
+  - event: sunset
+    offset: -01:30:00
+    id: chuva
+    trigger: sun
+  - event: sunset
+    offset: -01:15:00
+    id: nublado
+    trigger: sun
+  - event: sunset
+    offset: -00:45:00
+    id: sol
+    trigger: sun
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state:
+    - disarmed
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: weather.forecast_casa
+        state:
+        - rainy
+        - pouring
+        - lightning-rainy
+        - hail
+        - snowy
+      sequence:
+      - action: automation.trigger
+        metadata: {}
+        target:
+          entity_id: automation.cozinha_ligar_luzes
+        data:
+          skip_condition: true
+    - conditions:
+      - condition: state
+        entity_id: weather.forecast_casa
+        state:
+        - cloudy
+        - windy-variant
+        - fog
+        - partlycloudy
+        - windy
+      - condition: device
+        type: is_off
+        device_id: b367687260d5c280782ca2662bc32784
+        entity_id: eff0606bc3425bb3266f319ae937d810
+        domain: switch
+      sequence:
+      - action: automation.trigger
+        metadata: {}
+        target:
+          entity_id: automation.cozinha_ligar_luzes
+        data:
+          skip_condition: true
+    - conditions:
+      - condition: trigger
+        id: sol
+      sequence:
+      - action: automation.trigger
+        metadata: {}
+        target:
+          entity_id: automation.cozinha_ligar_luzes
+        data:
+          skip_condition: true
+  mode: single
+- id: '1722827110327'
+  alias: Tablet - carregador
+  description: ''
+  triggers:
+  - type: battery_level
+    device_id: 033813d16b9570ea8ed3fe2ee4e908e9
+    entity_id: d46e6d632a36b57b7c07b1885c32ad88
+    domain: sensor
+    trigger: device
+    id: '- de 20'
+    below: 20
+  - type: battery_level
+    device_id: 033813d16b9570ea8ed3fe2ee4e908e9
+    entity_id: d46e6d632a36b57b7c07b1885c32ad88
+    domain: sensor
+    trigger: device
+    id: + de 75
+    above: 75
+  - type: battery_level
+    device_id: 033813d16b9570ea8ed3fe2ee4e908e9
+    entity_id: d46e6d632a36b57b7c07b1885c32ad88
+    domain: sensor
+    trigger: device
+    id: '- de 10'
+    below: 10
+  - type: battery_level
+    device_id: 033813d16b9570ea8ed3fe2ee4e908e9
+    entity_id: d46e6d632a36b57b7c07b1885c32ad88
+    domain: sensor
+    trigger: device
+    id: '- de 5'
+    below: 5
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - + de 75
+      sequence:
+      - type: turn_off
+        device_id: bda1f38607c9e810f10b241569f46c77
+        entity_id: 6a55b660d511de43c42b534c2f201dbb
+        domain: switch
+      - metadata: {}
+        data:
+          message: Tablet descarregando
+        action: notify.mobile_app_zfold4
+    - conditions:
+      - condition: trigger
+        id:
+        - '- de 20'
+        - '- de 10'
+      sequence:
+      - type: turn_on
+        device_id: bda1f38607c9e810f10b241569f46c77
+        entity_id: 6a55b660d511de43c42b534c2f201dbb
+        domain: switch
+      - metadata: {}
+        data:
+          message: Tablet carregando
+        action: notify.mobile_app_zfold4
+    - conditions:
+      - condition: trigger
+        id:
+        - '- de 5'
+      sequence:
+      - type: turn_on
+        device_id: bda1f38607c9e810f10b241569f46c77
+        entity_id: 6a55b660d511de43c42b534c2f201dbb
+        domain: switch
+      - metadata: {}
+        data:
+          message: Tablet carregando
+          title: 'Tablet zerado de bateria '
+        action: notify.mobile_app_zfold4
+  mode: single
+- id: '1723000656841'
+  alias: 'Nicole - LED da TV '
+  description: ''
+  triggers:
+  - type: turned_off
+    device_id: 275d68e2aa61f9229082505ddab26cd2
+    entity_id: e26d13dc064b552d0c4c5b1401328d9a
+    domain: switch
+    trigger: device
+    id: 'Desativado '
+  - type: turned_on
+    device_id: 275d68e2aa61f9229082505ddab26cd2
+    entity_id: e26d13dc064b552d0c4c5b1401328d9a
+    domain: switch
+    trigger: device
+    id: Ativado
+  conditions:
+  - condition: device
+    type: is_off
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: bb97c45f407329aca067d3f274499a81
+    domain: switch
+    enabled: false
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - 'Desativado '
+    then:
+    - type: turn_off
+      device_id: 01f2c119ba10ffd80fe535d4c03ec09e
+      entity_id: d8598c0f4effd9848ca64cd9981f14f9
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Ativado
+    then:
+    - type: turn_on
+      device_id: 01f2c119ba10ffd80fe535d4c03ec09e
+      entity_id: d8598c0f4effd9848ca64cd9981f14f9
+      domain: switch
+  mode: single
+- id: '1723433058894'
+  alias: Sala - desligar luzes NSPanel
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 8bab4f915657ed4ea1b1151603b2b9e9
+    entity_id: b2b332adfb28616f2a8a705c922f6ead
+    domain: switch
+    trigger: device
+  conditions:
+  - condition: sun
+    before: sunrise
+    after: sunset
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.luzes_da_cozinha
+      - switch.luzes_da_sala
+      - switch.luzes_do_lavabo
+      - switch.cozinha_nichos_led_interruptor_1
+      device_id:
+      - 499d4ee323725ca01a01affd2726cfc1
+      - 5f9afdf1309a0b93f968874d8987f9ff
+      - b367687260d5c280782ca2662bc32784
+  - action: alexa_devices.send_text_command
+    metadata: {}
+    data:
+      device_id: 38496a203273bbff294d6465d4042e55
+      text_command: desligar tela
+  - action: media_player.turn_off
+    target:
+      entity_id:
+      - media_player.music_frame_2
+      - media_player.music_frame
+      - media_player.nestmini0550
+      - media_player.home_theater_2
+      - media_player.tx_nr5100
+    data: {}
+  - action: alexa_devices.send_text_command
+    metadata: {}
+    data:
+      device_id: 38496a203273bbff294d6465d4042e55
+      text_command: desligar tela
+  - action: alexa_devices.send_text_command
+    metadata: {}
+    data:
+      text_command: desligar tela
+      device_id: 43ae6cf18c1b53649e81393dee7d7daa
+  mode: single
+- id: '1723755786962'
+  alias: 'Closet - movimento '
+  description: ''
+  triggers:
+  - entity_id:
+    - timer.closet
+    to: idle
+    id: Ocioso
+    trigger: state
+  - entity_id:
+    - timer.closet
+    to: active
+    id: Movimento
+    trigger: state
+  - type: motion
+    device_id: 9a58a7513855478673b36aab01b68238
+    entity_id: 1e1e192bce0cdc593a3e72dc6e996b46
+    domain: binary_sensor
+    trigger: device
+    id: Detectou
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+      - Detectou
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.closet
+      data: {}
+    - if:
+      - condition: device
+        type: is_off
+        device_id: 17577b83efd0951c4002cd6c7b91053c
+        entity_id: bb97c45f407329aca067d3f274499a81
+        domain: switch
+      - condition: device
+        device_id: 5e51e34745f04cf7f80d7a374d922d6f
+        domain: alarm_control_panel
+        entity_id: 37dc24654a788314bfb4de2e2c827fd0
+        type: is_disarmed
+      then:
+      - type: turn_on
+        device_id: b2f2ddf08a4b8e321fa259c76df42cef
+        entity_id: e6bd5f71286d23ea1c87b580aea4407c
+        domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Ocioso
+    then:
+    - type: turn_off
+      device_id: b2f2ddf08a4b8e321fa259c76df42cef
+      entity_id: e6bd5f71286d23ea1c87b580aea4407c
+      domain: switch
+  mode: restart
+- id: '1724530319511'
+  alias: Lavabo - 3o botão interruptor
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 9a51076c10d0adead01a5e23ba16e4dc
+    entity_id: 8aa7f9cf78ad1d62f4df88ca2360df73
+    domain: switch
+    id: Liga
+    trigger: device
+  - type: turned_off
+    device_id: 9a51076c10d0adead01a5e23ba16e4dc
+    entity_id: 8aa7f9cf78ad1d62f4df88ca2360df73
+    domain: switch
+    id: Desliga
+    trigger: device
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Liga
+    then:
+    - action: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.espelho_do_lavabo
+        - switch.sonoff_100200129d_2
+  - if:
+    - condition: trigger
+      id:
+      - Desliga
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_100200129d_3
+        - switch.sonoff_100200129d_2
+        - switch.sonoff_100200129d_1
+        - switch.espelho_do_lavabo
+      data: {}
+    - action: notify.mobile_app_zfold4
+      metadata: {}
+      data:
+        message: Lavabo
+  mode: restart
+- id: '1725417576683'
+  alias: Suite - botão Dani
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.sonoff_a440016554
+    to: single
+    id: Single
+    trigger: state
+  - entity_id:
+    - sensor.sonoff_a440016554
+    to: 'double '
+    id: 'Double '
+    trigger: state
+  - entity_id:
+    - sensor.sonoff_a440016554
+    to: hold
+    id: Hold
+    trigger: state
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Single
+    - condition: state
+      entity_id: switch.luzes_da_suite
+      state:
+      - 'off'
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.arandela_suite
+  - if:
+    - condition: trigger
+      id:
+      - Single
+    - condition: state
+      entity_id: switch.luzes_da_suite
+      state:
+      - 'on'
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.luzes_da_nicole
+        - switch.luzes_do_eric
+        - switch.sonoff_10018dee48_1
+        - switch.luzes_da_suite
+        device_id: df57e4531b088a9e6a4f332bfd0f66f3
+      data: {}
+    - type: turn_on
+      device_id: 17577b83efd0951c4002cd6c7b91053c
+      entity_id: bb97c45f407329aca067d3f274499a81
+      domain: switch
+    - action: timer.finish
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - timer.quarto_eric
+        - timer.corredor
+        - timer.quarto_nicole
+        - timer.closet
+        - timer.banho_nicole
+    - action: light.turn_off
+      metadata: {}
+      target:
+        entity_id: light.fita_led_rgb_5m
+      data: {}
+  - if:
+    - condition: trigger
+      id:
+      - 'Double '
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id: switch.luzes_da_suite
+      data: {}
+  mode: single
+- id: '1725804544440'
+  alias: Sala - NSPanel controla painel LED TV
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 8bab4f915657ed4ea1b1151603b2b9e9
+    entity_id: 2a3fe028eb0da3f11e73437fe3b34b5d
+    domain: switch
+    id: Ligado
+    trigger: device
+  - alias: 'Desativado '
+    type: turned_off
+    device_id: 8bab4f915657ed4ea1b1151603b2b9e9
+    entity_id: 2a3fe028eb0da3f11e73437fe3b34b5d
+    domain: switch
+    id: Desligado
+    trigger: device
+  conditions:
+  - condition: device
+    device_id: 5e51e34745f04cf7f80d7a374d922d6f
+    domain: alarm_control_panel
+    entity_id: 37dc24654a788314bfb4de2e2c827fd0
+    type: is_disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Ligado
+    then:
+    - action: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.sonoff_1001e0dd5a_1
+  - if:
+    - condition: trigger
+      id:
+      - Desligado
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_1001e0dd5a_1
+      data: {}
+  mode: single
+- id: '1726450612443'
+  alias: 'Sala - movimento noturno '
+  description: ''
+  triggers:
+  - type: motion
+    device_id: 7316cbacc8493fa41d960855d7b84651
+    entity_id: 9b6b660ce19b4b6c1d36e0534e94f51c
+    domain: binary_sensor
+    trigger: device
+  - type: motion
+    device_id: 09e07aaa640d6b67e0102d3da11c85f6
+    entity_id: 5e8d44a8bf2542a3a9c249de1dcaff20
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - condition: state
+    entity_id: switch.luzes_da_cozinha
+    state: 'off'
+  - condition: state
+    entity_id: switch.luzes_da_sala
+    state: 'off'
+  - condition: time
+    after: 01:00:00
+    before: 06:30:00
+  - condition: device
+    device_id: 9effd46c0c669c81be568b6baf21a14c
+    domain: media_player
+    entity_id: eea259ec8e8a95d09dd5c7d8619d1658
+    type: is_off
+  - condition: device
+    type: is_on
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: bb97c45f407329aca067d3f274499a81
+    domain: switch
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.ilha_interruptor_1
+  - action: notify.mobile_app_zfold4
+    metadata: {}
+    data:
+      message: 'Movimento noturno na sala '
+  - delay:
+      hours: 0
+      minutes: 4
+      seconds: 0
+      milliseconds: 0
+  - action: switch.turn_off
+    target:
+      entity_id:
+      - switch.ilha_interruptor_1
+      - switch.sonoff_1001887e06_2
+    data: {}
+  mode: single
+- id: '1741568290357'
+  alias: Corredor - chave hotel
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: d8e4c9d44f0588ccf8c0fe1a1e7afd7a
+    entity_id: 73bd5ca47e3ec3a9bc6a463e0ae0dc98
+    domain: switch
+    trigger: device
+    id: Tuya on
+  - type: turned_off
+    device_id: d8e4c9d44f0588ccf8c0fe1a1e7afd7a
+    entity_id: 73bd5ca47e3ec3a9bc6a463e0ae0dc98
+    domain: switch
+    trigger: device
+    id: Tuya off
+  - type: turned_on
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: dac219311283b7d5262d710d8f61b278
+    domain: switch
+    trigger: device
+    id: Sonoff on
+  - type: turned_off
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: dac219311283b7d5262d710d8f61b278
+    domain: switch
+    trigger: device
+    id: Sonoff off
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Tuya off
+    then:
+    - type: turn_off
+      device_id: 17577b83efd0951c4002cd6c7b91053c
+      entity_id: dac219311283b7d5262d710d8f61b278
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Tuya on
+    then:
+    - type: turn_on
+      device_id: 17577b83efd0951c4002cd6c7b91053c
+      entity_id: dac219311283b7d5262d710d8f61b278
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Sonoff off
+    then:
+    - type: turn_off
+      device_id: d8e4c9d44f0588ccf8c0fe1a1e7afd7a
+      entity_id: 73bd5ca47e3ec3a9bc6a463e0ae0dc98
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Sonoff on
+    then:
+    - type: turn_on
+      device_id: d8e4c9d44f0588ccf8c0fe1a1e7afd7a
+      entity_id: 73bd5ca47e3ec3a9bc6a463e0ae0dc98
+      domain: switch
+  mode: single
+- id: '1749434533565'
+  alias: Suite - movimento
+  description: ''
+  triggers:
+  - entity_id:
+    - timer.suite
+    to: idle
+    id: Ocioso
+    trigger: state
+  - entity_id:
+    - timer.suite
+    to: active
+    id: Movimento
+    trigger: state
+  - type: turned_on
+    device_id: 902962bccd850d600c733825ce64149b
+    entity_id: 40cb89919c68a62f97d1c5f343e36f30
+    domain: binary_sensor
+    trigger: device
+    id: Movimento cama
+  - trigger: state
+    entity_id:
+    - binary_sensor.sonoff_a440036eb8
+    to: 'on'
+    id: Detector
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+      - Movimento cama
+      - Detector
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.suite
+      data: {}
+    - if:
+      - condition: device
+        type: is_off
+        device_id: 17577b83efd0951c4002cd6c7b91053c
+        entity_id: bb97c45f407329aca067d3f274499a81
+        domain: switch
+      - condition: device
+        device_id: 5e51e34745f04cf7f80d7a374d922d6f
+        domain: alarm_control_panel
+        entity_id: 37dc24654a788314bfb4de2e2c827fd0
+        type: is_disarmed
+      then:
+      - type: turn_on
+        device_id: 9920034bd1123c1923242b68c92e5d7d
+        entity_id: 73f3f45361dd6dd6828b4f132cfcaa4a
+        domain: light
+  - if:
+    - condition: trigger
+      id:
+      - Ocioso
+    then:
+    - type: turn_off
+      device_id: b2f2ddf08a4b8e321fa259c76df42cef
+      entity_id: e6bd5f71286d23ea1c87b580aea4407c
+      domain: switch
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 30
+        milliseconds: 0
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.arandela_suite
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 30
+        milliseconds: 0
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.arandela_suite
+    - type: turn_off
+      device_id: 6fd6b17870c0345ad8bf36fb086fca49
+      entity_id: 726fc9c450c2044cc6bf5b4d8508436c
+      domain: switch
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 30
+        milliseconds: 0
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.luzes_da_suite
+  mode: restart
+- id: '1749856006086'
+  alias: 'Suite - ligar toalheiro '
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 6fd6b17870c0345ad8bf36fb086fca49
+    entity_id: 57b28338c5ca8de7d7763d4539ce4e07
+    domain: switch
+    trigger: device
+  - type: turned_on
+    device_id: df57e4531b088a9e6a4f332bfd0f66f3
+    entity_id: f3669be2d38feb3b98c2d8c46ff1b0c6
+    domain: switch
+    trigger: device
+  - type: volume_flow_rate
+    device_id: 29a6e005da8e23c1addc976e2d2aab4c
+    entity_id: 309e55113b9cbea58b69fcbbedb21811
+    domain: sensor
+    trigger: device
+    above: 2
+  conditions:
+  - condition: time
+    after: '15:00:00'
+    before: '23:59:00'
+    weekday:
+    - sat
+    - fri
+    - thu
+    - wed
+    - tue
+    - mon
+    - sun
+  actions:
+  - type: turn_on
+    device_id: 97b68274650665a6a725177e60ee469c
+    entity_id: 5e57f3722928049f33c44caf233138cd
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 35
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 97b68274650665a6a725177e60ee469c
+    entity_id: 5e57f3722928049f33c44caf233138cd
+    domain: switch
+  mode: single
+- id: '1752867667206'
+  alias: Nicole - movimento
+  description: ''
+  triggers:
+  - alias: Movimento Ocioso
+    entity_id:
+    - timer.quarto_nicole
+    to: idle
+    id: Movimento_ocioso
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.tze200_3towulqd_ts0601_ocupacao
+    to: 'on'
+    id: Movimento
+  - trigger: state
+    entity_id:
+    - binary_sensor.tze200_3towulqd_ts0601_ocupacao
+    to: 'off'
+    id: Liberado
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.quarto_nicole
+      data: {}
+    - if:
+      - condition: state
+        entity_id: switch.sonoff_10018dee48_3
+        state: 'off'
+      then:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.sonoff_10026c409b_1
+      - type: turn_on
+        device_id: 5bd4ebd22dcd5e84cf3e8570dbcc12f7
+        entity_id: 7fdd514f2abd8ee085763019ba618a6a
+        domain: light
+        brightness_pct: 100
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Movimento_ocioso
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_10026c409b_2
+      data: {}
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.sonoff_10026c409b_1
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: media_player.turn_off
+      metadata: {}
+      data: {}
+      target:
+        device_id:
+        - afab14d6c5d511f765acf8ab4d133ef0
+      enabled: true
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.luzes_da_nicole
+        - switch.espelho_banheiro_nicole_interruptor_1
+    - type: turn_off
+      device_id: 5bd4ebd22dcd5e84cf3e8570dbcc12f7
+      entity_id: 7fdd514f2abd8ee085763019ba618a6a
+      domain: light
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Liberado
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.quarto_nicole
+      data: {}
+  mode: restart
+- id: '1752884868994'
+  alias: Eric -  movimento
+  description: ''
+  triggers:
+  - alias: Movimento Ocioso
+    entity_id:
+    - timer.quarto_eric
+    to: idle
+    id: Movimento_ocioso
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.eric_motion_sensor_movimento
+    to: 'on'
+    id: Movimento
+  - trigger: state
+    entity_id:
+    - binary_sensor.eric_motion_sensor_movimento
+    to: 'off'
+    id: Liberado
+  - trigger: state
+    entity_id:
+    - switch.luzes_do_eric
+    to: 'on'
+    id: Interruptores
+  - trigger: state
+    entity_id:
+    - binary_sensor.eric_motion_sensor_quarto
+    to: 'on'
+    id: Movimento2
+  - trigger: state
+    entity_id:
+    - binary_sensor.eric_motion_sensor_quarto
+    to: 'off'
+    id: Liberado2
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+      - Interruptores
+      - Movimento2
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.quarto_eric
+      data: {}
+    - if:
+      - condition: state
+        entity_id: alarm_control_panel.alarmo
+        state: disarmed
+      - condition: state
+        entity_id: switch.sonoff_10018dee48_3
+        state: 'off'
+      then:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.sonoff_10018de98b_3
+      - type: turn_on
+        device_id: 6ca8db2cd6cb58a49ec19e1a2de654a1
+        entity_id: 1e5dbdfba8fce27d9c0b427b3c109531
+        domain: light
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Movimento_ocioso
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_10018de98b_1
+      data: {}
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.eric_nichos_interruptor_1
+        - switch.sonoff_10018de98b_1
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.luzes_do_eric
+        - switch.eric_led_da_tv_tomada_1
+        - switch.sonoff_10018de98b_3
+        - switch.wifi_breaker_3_interruptor_1
+    - type: turn_off
+      device_id: be022c4355e8e71c2331ee1c0a485fd3
+      entity_id: 627a27a968c5244807bdbcc477080e21
+      domain: light
+    - type: turn_off
+      device_id: 6ca8db2cd6cb58a49ec19e1a2de654a1
+      entity_id: 1e5dbdfba8fce27d9c0b427b3c109531
+      domain: light
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Liberado
+        - Liberado2
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.quarto_eric
+      data: {}
+  mode: restart
+- id: '1752894800711'
+  alias: Corredor - movimento
+  description: ''
+  triggers:
+  - alias: Movimento Ocioso
+    entity_id:
+    - timer.corredor
+    to: idle
+    id: Movimento_ocioso
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.motion_sensor_movimento
+    to:
+    - 'on'
+    id: Movimento1
+  - trigger: state
+    entity_id:
+    - binary_sensor.corredor_suite_luminance_motion_sensor_movimento
+    to: 'on'
+    id: Movimento2
+  - trigger: state
+    entity_id:
+    - binary_sensor.tz3000_6ygjfyll_ts0202
+    to:
+    - 'on'
+    id: Movimento3
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento2
+      - Movimento1
+      - Movimento3
+    then:
+    - action: timer.start
+      data: {}
+      target:
+        entity_id: timer.corredor
+    - if:
+      - condition: state
+        entity_id: switch.sonoff_10018dee48_3
+        state: 'off'
+      - condition: state
+        entity_id: alarm_control_panel.alarmo
+        state: disarmed
+      then:
+      - if:
+        - condition: time
+          before: '23:00:00'
+        then:
+        - action: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: switch.sonoff_10018dee48_1
+        else:
+        - action: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id:
+            - switch.sonoff_100203a579_1
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Movimento_ocioso
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_10018dee48_1
+        - switch.sonoff_100203a579_1
+      data: {}
+  mode: restart
+- id: '1752975140953'
+  alias: Sala - movimento
+  description: ''
+  triggers:
+  - alias: Movimento Ocioso
+    entity_id:
+    - timer.sala
+    to: idle
+    id: Movimento_ocioso
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.sala_motion_sensor
+    to: 'on'
+    id: Movimento
+  - trigger: state
+    entity_id:
+    - binary_sensor.cozinha_motion_sensor_movimento_2
+    to:
+    - 'on'
+    id: CozinhaMovimento
+  - trigger: state
+    entity_id:
+    - binary_sensor.sala_motion_sensor
+    to:
+    - 'off'
+    id: Liberado
+  - trigger: state
+    entity_id:
+    - binary_sensor.corredor_motion_sensor_pro_movimento
+    to:
+    - 'on'
+    id: Movimento Pro
+  - trigger: state
+    entity_id:
+    - binary_sensor.corredor_motion_sensor_pro_movimento
+    to:
+    - 'off'
+    id: Liberado
+  - trigger: state
+    entity_id:
+    - light.luzes_da_sala
+    from:
+    - 'on'
+    id: Luzes ligada
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+      - CozinhaMovimento
+      - Movimento Pro
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.sala
+      data: {}
+    - if:
+      - condition: state
+        entity_id: switch.sonoff_10018dee48_3
+        state:
+        - 'on'
+      - condition: device
+        device_id: 5e51e34745f04cf7f80d7a374d922d6f
+        domain: alarm_control_panel
+        entity_id: 37dc24654a788314bfb4de2e2c827fd0
+        type: is_disarmed
+      - condition: state
+        entity_id: switch.luzes_da_sala
+        state:
+        - 'off'
+      - condition: device
+        device_id: 9effd46c0c669c81be568b6baf21a14c
+        domain: media_player
+        entity_id: eea259ec8e8a95d09dd5c7d8619d1658
+        type: is_off
+        enabled: true
+      - condition: sun
+        before: sunrise
+        after: sunset
+      then:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.sonoff_10021a5971_2
+      - delay:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+      - action: switch.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.sonoff_10021a5971_2
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.09
+    target:
+      entity_id:
+      - media_player.music_frame
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Movimento_ocioso
+    then:
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.11
+      target:
+        entity_id:
+        - media_player.music_frame_2
+        device_id: 1024b1c11e9d6da1d9e3082300842673
+      enabled: true
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.sonoff_1002036351_1
+    - action: media_player.play_media
+      target:
+        device_id: 1024b1c11e9d6da1d9e3082300842673
+      data:
+        media:
+          media_content_id: media-source://tts/tts.google_en_com?message=Aten%C3%A7%C3%A3o%21+As+luzes+da+sala+ser%C3%A3o+desligadas+em+1+minuto%21+Ligue+alguma+luz+ou+se+movimente.&language=pt
+          media_content_type: audio/mp3
+          metadata:
+            title: Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue alguma
+              luz ou se movimente.
+            thumbnail: https://brands.home-assistant.io/_/google_translate/logo.png
+            media_class: app
+            children_media_class:
+            navigateIds:
+            - {}
+            - media_content_type: app
+              media_content_id: media-source://tts
+            - media_content_type: audio/mp3
+              media_content_id: media-source://tts/tts.google_en_com?message=Aten%C3%A7%C3%A3o%21+As+luzes+da+sala+ser%C3%A3o+desligadas+em+1+minuto%21+Ligue+alguma+luz+ou+se+movimente.&language=pt
+            browse_entity_id: media_player.music_frame
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: media_player.play_media
+      target:
+        device_id: 1024b1c11e9d6da1d9e3082300842673
+      data:
+        media:
+          media_content_id: media-source://tts/tts.google_en_com?message=Aten%C3%A7%C3%A3o%21+As+luzes+da+sala+ser%C3%A3o+desligadas+em+1+minuto%21+Ligue+alguma+luz+ou+se+movimente.&language=pt
+          media_content_type: audio/mp3
+          metadata:
+            title: Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue alguma
+              luz ou se movimente.
+            thumbnail: https://brands.home-assistant.io/_/google_translate/logo.png
+            media_class: app
+            children_media_class:
+            navigateIds:
+            - {}
+            - media_content_type: app
+              media_content_id: media-source://tts
+            - media_content_type: audio/mp3
+              media_content_id: media-source://tts/tts.google_en_com?message=Aten%C3%A7%C3%A3o%21+As+luzes+da+sala+ser%C3%A3o+desligadas+em+1+minuto%21+Ligue+alguma+luz+ou+se+movimente.&language=pt
+            browse_entity_id: media_player.music_frame
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.sonoff_1002036186_2
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: media_player.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: media_player.music_frame_2
+      enabled: false
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.luzes_da_sala
+    - action: alexa_devices.send_text_command
+      metadata: {}
+      data:
+        device_id: 38496a203273bbff294d6465d4042e55
+        text_command: desligar tela
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Liberado
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.sala
+      data: {}
+  mode: restart
+- id: '1758495004445'
+  alias: Sala - subwoofer
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.tx_nr5100
+    - media_player.onkyo_tx_nr5100_f563ca_2
+    to: 'off'
+    id: Sub desligou
+  - trigger: state
+    entity_id:
+    - media_player.onkyo_tx_nr5100_f563ca_2
+    - media_player.tx_nr5100
+    to: 'on'
+    id: Sub ligou
+  - trigger: state
+    entity_id:
+    - media_player.onkyo_tx_nr5100_f563ca_2
+    - media_player.tx_nr5100
+    to: standby
+    id: Sub ligou
+  - trigger: state
+    entity_id:
+    - media_player.onkyo_tx_nr5100_f563ca_2
+    - media_player.tx_nr5100
+    to: playing
+    id: Sub ligou
+  - trigger: time
+    at: '23:00:00'
+    id: Hora
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Sub desligou
+      - Hora
+    then:
+    - type: turn_off
+      device_id: 65521d4287a75a2c1bf685cb7af2a38b
+      entity_id: 28acb048a251481979d3dfe7c9f3570f
+      domain: switch
+    else:
+    - type: turn_on
+      device_id: 65521d4287a75a2c1bf685cb7af2a38b
+      entity_id: 28acb048a251481979d3dfe7c9f3570f
+      domain: switch
+  mode: single
+- id: '1763259487234'
+  alias: Sala - desligar LED sanca
+  description: ''
+  triggers:
+  - trigger: time
+    at: 05:00:00
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: ffd3af79d524466a845af9632fa93a8e
+    entity_id: 973148b62067d63a345f9c1cd90436fb
+    domain: light
+  mode: single
+- id: '1763344840874'
+  alias: Sala - porta de entrada
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 5ab340c52c9995f0bafbc6c0dc79812e
+    entity_id: b729bfc5dc7003d3bca5d64247f8dfc6
+    domain: binary_sensor
+    trigger: device
+    id: Aberta
+  - type: opened
+    device_id: 5ab340c52c9995f0bafbc6c0dc79812e
+    entity_id: b729bfc5dc7003d3bca5d64247f8dfc6
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    id: Aberta 1 min
+  - type: not_opened
+    device_id: 5ab340c52c9995f0bafbc6c0dc79812e
+    entity_id: b729bfc5dc7003d3bca5d64247f8dfc6
+    domain: binary_sensor
+    trigger: device
+    id: Fechada
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Aberta
+    - condition: state
+      entity_id: switch.luzes_da_sala
+      state:
+      - 'off'
+    - condition: device
+      device_id: 9effd46c0c669c81be568b6baf21a14c
+      domain: media_player
+      entity_id: eea259ec8e8a95d09dd5c7d8619d1658
+      type: is_off
+    - condition: device
+      device_id: d9c64e91476cb5a39d1fdf508673f900
+      domain: media_player
+      entity_id: ccc6d60a59506b4beb48870f9263604a
+      type: is_off
+    then:
+    - type: turn_on
+      device_id: 5f9afdf1309a0b93f968874d8987f9ff
+      entity_id: 67a209bb0d8363e1f2526bdbba20ba71
+      domain: light
+    - action: notify.mobile_app_zfold4
+      metadata: {}
+      data:
+        message: Porta aberta e luz de entrada ligada!
+  - if:
+    - condition: trigger
+      id:
+      - Aberta 1 min
+    then:
+    - action: notify.send_message
+      data:
+        message: Porta aberta há mais de 1 minuto!
+      target:
+        entity_id:
+        - notify.echo_show_8_speak
+        - notify.music_frame_alexa_speak
+    - action: notify.mobile_app_zfold4
+      metadata: {}
+      data:
+        message: Porta aberta por 1 minuto!
+  mode: single
+- id: '1763848417558'
+  alias: Aviso Sonoro - Interruptor Ligado
+  description: Avisa no Google Home quando o interruptor for ligado
+  triggers:
+  - entity_id: light.sonoff_1002036186
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - action: tts.speak
+    target:
+      entity_id: tts.google_ai_tts
+    data:
+      cache: true
+      media_player_entity_id: media_player.cozinha_4
+      message: 'oi oi oi oi oi '
+  - action: alexa_devices.send_sound
+    metadata: {}
+    data:
+      sound: amzn_sfx_doorbell_chime_01
+      device_id: 3926ef6f709821d794008bb86c52ecd4
+  - action: alexa_devices.send_text_command
+    metadata: {}
+    data:
+      device_id: 38496a203273bbff294d6465d4042e55
+      text_command: desligar tela
+  mode: single
+- id: '1765403263723'
+  alias: Cozinha - desligar luzes
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: a596cab20ebb4bdb5d8ce1a5f176beca
+    entity_id: d51d48f52a856d2a87a080b71d23ff20
+    domain: light
+  - type: turn_off
+    device_id: 823dddc78874dd3987cd14188b78a5a3
+    entity_id: 07ee905d710ace9fac2d8121924bcd15
+    domain: light
+  - type: turn_off
+    device_id: 4b787a0be0d44cb91d15949617798e17
+    entity_id: 976f5231d4889cf3165bc14dc157bbef
+    domain: switch
+  - type: turn_off
+    device_id: 2d31979b9a2d8869e39e4be05804dc21
+    entity_id: f3e4348b0f9c6ea0e601151a41f13e8e
+    domain: light
+  - type: toggle
+    device_id: 44759ed71b0f6a82bcc65d2e33efa4a6
+    entity_id: e042f1604e0dc36207b629524f5b3633
+    domain: light
+  - type: turn_off
+    device_id: e17778418e70c81f4049b5b2a9165fde
+    entity_id: be630987e593594bf93e47138507f2f1
+    domain: switch
+  - type: turn_off
+    device_id: c788817b260ac191cc8f971e09cf00ec
+    entity_id: f3bc1ca66e44276249fe6e63bf0ef281
+    domain: light
+  - type: turn_off
+    device_id: a3413a0d4128053a16d6a63098d40839
+    entity_id: c6be082d1cb3b4d93d99cdda332086f9
+    domain: switch
+  - type: turn_off
+    device_id: 8bab4f915657ed4ea1b1151603b2b9e9
+    entity_id: 2a3fe028eb0da3f11e73437fe3b34b5d
+    domain: switch
+  mode: single
+- id: '1766001484689'
+  alias: Suíte - cortinas
+  description: ''
+  triggers:
+  - trigger: time
+    at: '22:30:00'
+    id: Abrir blackout
+  - trigger: time
+    at: '12:30:00'
+    id: Abrir cortina
+  conditions:
+  - condition: device
+    device_id: 5e51e34745f04cf7f80d7a374d922d6f
+    domain: alarm_control_panel
+    entity_id: 37dc24654a788314bfb4de2e2c827fd0
+    type: is_disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Abrir blackout
+    then:
+    - device_id: ed32516b10312da4a71c0ceaad8b66c4
+      domain: cover
+      entity_id: 8e38e2f9b76939a6c380fad9428f1fd0
+      type: open
+  - if:
+    - condition: trigger
+      id:
+      - Abrir cortina
+    then:
+    - device_id: ed32516b10312da4a71c0ceaad8b66c4
+      domain: cover
+      entity_id: 8e38e2f9b76939a6c380fad9428f1fd0
+      type: close
+  mode: single
+- id: '1777217946260'
+  alias: Suíte - escova Oral-B
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.triumph_v2_90f2
+    to:
+    - charging
+    id: charging
+  - trigger: state
+    entity_id:
+    - sensor.triumph_v2_90f2
+    to:
+    - idle
+    id: idle
+  - trigger: state
+    entity_id:
+    - sensor.triumph_v2_90f2
+    to:
+    - running
+    id: running
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - idle
+      sequence:
+      - type: turn_off
+        device_id: 1bb0a2df63cc0b8cb75be4e7f5a21f8e
+        entity_id: 1f44a726233f4ea71a519484b6d6e1da
+        domain: light
+    - conditions:
+      - condition: trigger
+        id:
+        - running
+      sequence:
+      - type: turn_on
+        device_id: 1bb0a2df63cc0b8cb75be4e7f5a21f8e
+        entity_id: 1f44a726233f4ea71a519484b6d6e1da
+        domain: light
+        brightness_pct: 20
+    - conditions:
+      - condition: trigger
+        id:
+        - charging
+      sequence: []
+  mode: single

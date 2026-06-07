@@ -1,0 +1,62 @@
+- id: '1723755786962'
+  alias: 'Closet - movimento '
+  description: ''
+  triggers:
+  - entity_id:
+    - timer.closet
+    to: idle
+    id: Ocioso
+    trigger: state
+  - entity_id:
+    - timer.closet
+    to: active
+    id: Movimento
+    trigger: state
+  - type: motion
+    device_id: 9a58a7513855478673b36aab01b68238
+    entity_id: 1e1e192bce0cdc593a3e72dc6e996b46
+    domain: binary_sensor
+    trigger: device
+    id: Detectou
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+      - Detectou
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.closet
+      data: {}
+    - if:
+      - condition: device
+        type: is_off
+        device_id: 17577b83efd0951c4002cd6c7b91053c
+        entity_id: bb97c45f407329aca067d3f274499a81
+        domain: switch
+      - condition: device
+        device_id: 5e51e34745f04cf7f80d7a374d922d6f
+        domain: alarm_control_panel
+        entity_id: 37dc24654a788314bfb4de2e2c827fd0
+        type: is_disarmed
+      then:
+      - type: turn_on
+        device_id: b2f2ddf08a4b8e321fa259c76df42cef
+        entity_id: e6bd5f71286d23ea1c87b580aea4407c
+        domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Ocioso
+    then:
+    - type: turn_off
+      device_id: b2f2ddf08a4b8e321fa259c76df42cef
+      entity_id: e6bd5f71286d23ea1c87b580aea4407c
+      domain: switch
+  mode: restart

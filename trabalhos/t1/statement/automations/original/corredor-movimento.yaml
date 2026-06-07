@@ -1,0 +1,81 @@
+- id: '1752894800711'
+  alias: Corredor - movimento
+  description: ''
+  triggers:
+  - alias: Movimento Ocioso
+    entity_id:
+    - timer.corredor
+    to: idle
+    id: Movimento_ocioso
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.motion_sensor_movimento
+    to:
+    - on
+    id: Movimento1
+  - trigger: state
+    entity_id:
+    - binary_sensor.corredor_suite_luminance_motion_sensor_movimento
+    to: on
+    id: Movimento2
+  - trigger: state
+    entity_id:
+    - binary_sensor.tz3000_6ygjfyll_ts0202
+    to:
+    - on
+    id: Movimento3
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento2
+      - Movimento1
+      - Movimento3
+    then:
+    - action: timer.start
+      data: {}
+      target:
+        entity_id: timer.corredor
+    - if:
+      - condition: state
+        entity_id: switch.sonoff_10018dee48_3
+        state: off
+      - condition: state
+        entity_id: alarm_control_panel.alarmo
+        state: disarmed
+      then:
+      - if:
+        - condition: time
+          before: 23:00:00
+        then:
+        - action: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: switch.sonoff_10018dee48_1
+        else:
+        - action: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id:
+            - switch.sonoff_100203a579_1
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Movimento_ocioso
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_10018dee48_1
+        - switch.sonoff_100203a579_1
+      data: {}
+  mode: restart

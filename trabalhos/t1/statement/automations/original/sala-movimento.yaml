@@ -1,0 +1,221 @@
+- id: '1752975140953'
+  alias: Sala - movimento
+  description: ''
+  triggers:
+  - alias: Movimento Ocioso
+    entity_id:
+    - timer.sala
+    to: idle
+    id: Movimento_ocioso
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.sala_motion_sensor
+    to: on
+    id: Movimento
+  - trigger: state
+    entity_id:
+    - binary_sensor.cozinha_motion_sensor_movimento_2
+    to:
+    - on
+    id: CozinhaMovimento
+  - trigger: state
+    entity_id:
+    - binary_sensor.sala_motion_sensor
+    to:
+    - off
+    id: Liberado
+  - trigger: state
+    entity_id:
+    - binary_sensor.corredor_motion_sensor_pro_movimento
+    to:
+    - on
+    id: Movimento Pro
+  - trigger: state
+    entity_id:
+    - binary_sensor.corredor_motion_sensor_pro_movimento
+    to:
+    - off
+    id: Liberado
+  - trigger: state
+    entity_id:
+    - light.luzes_da_sala
+    from:
+    - on
+    id: Luzes ligada
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+      - CozinhaMovimento
+      - Movimento Pro
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.sala
+      data: {}
+    - if:
+      - condition: state
+        entity_id: switch.sonoff_10018dee48_3
+        state:
+        - on
+      - condition: device
+        device_id: 5e51e34745f04cf7f80d7a374d922d6f
+        domain: alarm_control_panel
+        entity_id: 37dc24654a788314bfb4de2e2c827fd0
+        type: is_disarmed
+      - condition: state
+        entity_id: switch.luzes_da_sala
+        state:
+        - off
+      - condition: device
+        device_id: 9effd46c0c669c81be568b6baf21a14c
+        domain: media_player
+        entity_id: eea259ec8e8a95d09dd5c7d8619d1658
+        type: is_off
+        enabled: true
+      - condition: sun
+        before: sunrise
+        after: sunset
+      then:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.sonoff_10021a5971_2
+      - delay:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+      - action: switch.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.sonoff_10021a5971_2
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.09
+    target:
+      entity_id:
+      - media_player.music_frame
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Movimento_ocioso
+    then:
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.11
+      target:
+        entity_id:
+        - media_player.music_frame_2
+        device_id: 1024b1c11e9d6da1d9e3082300842673
+      enabled: true
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.sonoff_1002036351_1
+    - action: media_player.play_media
+      target:
+        device_id: 1024b1c11e9d6da1d9e3082300842673
+      data:
+        media:
+          media_content_id: 
+            media-source://tts/tts.google_en_com?message=Aten%C3%A7%C3%A3o%21+As+luzes+da+sala+ser%C3%A3o+desligadas+em+1+minuto%21+Ligue+alguma+luz+ou+se+movimente.&language=pt
+          media_content_type: audio/mp3
+          metadata:
+            title: Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue
+              alguma luz ou se movimente.
+            thumbnail: 
+              https://brands.home-assistant.io/_/google_translate/logo.png
+            media_class: app
+            children_media_class:
+            navigateIds:
+            - {}
+            - media_content_type: app
+              media_content_id: media-source://tts
+            - media_content_type: audio/mp3
+              media_content_id: 
+                media-source://tts/tts.google_en_com?message=Aten%C3%A7%C3%A3o%21+As+luzes+da+sala+ser%C3%A3o+desligadas+em+1+minuto%21+Ligue+alguma+luz+ou+se+movimente.&language=pt
+            browse_entity_id: media_player.music_frame
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: media_player.play_media
+      target:
+        device_id: 1024b1c11e9d6da1d9e3082300842673
+      data:
+        media:
+          media_content_id: 
+            media-source://tts/tts.google_en_com?message=Aten%C3%A7%C3%A3o%21+As+luzes+da+sala+ser%C3%A3o+desligadas+em+1+minuto%21+Ligue+alguma+luz+ou+se+movimente.&language=pt
+          media_content_type: audio/mp3
+          metadata:
+            title: Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue
+              alguma luz ou se movimente.
+            thumbnail: 
+              https://brands.home-assistant.io/_/google_translate/logo.png
+            media_class: app
+            children_media_class:
+            navigateIds:
+            - {}
+            - media_content_type: app
+              media_content_id: media-source://tts
+            - media_content_type: audio/mp3
+              media_content_id: 
+                media-source://tts/tts.google_en_com?message=Aten%C3%A7%C3%A3o%21+As+luzes+da+sala+ser%C3%A3o+desligadas+em+1+minuto%21+Ligue+alguma+luz+ou+se+movimente.&language=pt
+            browse_entity_id: media_player.music_frame
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.sonoff_1002036186_2
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: media_player.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: media_player.music_frame_2
+      enabled: false
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.luzes_da_sala
+    - action: alexa_devices.send_text_command
+      metadata: {}
+      data:
+        device_id: 38496a203273bbff294d6465d4042e55
+        text_command: desligar tela
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Liberado
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.sala
+      data: {}
+  mode: restart

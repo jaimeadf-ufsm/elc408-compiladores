@@ -1,0 +1,82 @@
+- id: '1725417576683'
+  alias: Suite - botão Dani
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.sonoff_a440016554
+    to: single
+    id: Single
+    trigger: state
+  - entity_id:
+    - sensor.sonoff_a440016554
+    to: 'double '
+    id: 'Double '
+    trigger: state
+  - entity_id:
+    - sensor.sonoff_a440016554
+    to: hold
+    id: Hold
+    trigger: state
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Single
+    - condition: state
+      entity_id: switch.luzes_da_suite
+      state:
+      - off
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.arandela_suite
+  - if:
+    - condition: trigger
+      id:
+      - Single
+    - condition: state
+      entity_id: switch.luzes_da_suite
+      state:
+      - on
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.luzes_da_nicole
+        - switch.luzes_do_eric
+        - switch.sonoff_10018dee48_1
+        - switch.luzes_da_suite
+        device_id: df57e4531b088a9e6a4f332bfd0f66f3
+      data: {}
+    - type: turn_on
+      device_id: 17577b83efd0951c4002cd6c7b91053c
+      entity_id: bb97c45f407329aca067d3f274499a81
+      domain: switch
+    - action: timer.finish
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - timer.quarto_eric
+        - timer.corredor
+        - timer.quarto_nicole
+        - timer.closet
+        - timer.banho_nicole
+    - action: light.turn_off
+      metadata: {}
+      target:
+        entity_id: light.fita_led_rgb_5m
+      data: {}
+  - if:
+    - condition: trigger
+      id:
+      - 'Double '
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id: switch.luzes_da_suite
+      data: {}
+  mode: single

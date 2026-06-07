@@ -1,0 +1,109 @@
+- id: '1752867667206'
+  alias: Nicole - movimento
+  description: ''
+  triggers:
+  - alias: Movimento Ocioso
+    entity_id:
+    - timer.quarto_nicole
+    to: idle
+    id: Movimento_ocioso
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.tze200_3towulqd_ts0601_ocupacao
+    to: on
+    id: Movimento
+  - trigger: state
+    entity_id:
+    - binary_sensor.tze200_3towulqd_ts0601_ocupacao
+    to: off
+    id: Liberado
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.quarto_nicole
+      data: {}
+    - if:
+      - condition: state
+        entity_id: switch.sonoff_10018dee48_3
+        state: off
+      then:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.sonoff_10026c409b_1
+      - type: turn_on
+        device_id: 5bd4ebd22dcd5e84cf3e8570dbcc12f7
+        entity_id: 7fdd514f2abd8ee085763019ba618a6a
+        domain: light
+        brightness_pct: 100
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Movimento_ocioso
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_10026c409b_2
+      data: {}
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.sonoff_10026c409b_1
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+      enabled: true
+    - action: media_player.turn_off
+      metadata: {}
+      data: {}
+      target:
+        device_id:
+        - afab14d6c5d511f765acf8ab4d133ef0
+      enabled: true
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.luzes_da_nicole
+        - switch.espelho_banheiro_nicole_interruptor_1
+    - type: turn_off
+      device_id: 5bd4ebd22dcd5e84cf3e8570dbcc12f7
+      entity_id: 7fdd514f2abd8ee085763019ba618a6a
+      domain: light
+  - if:
+    - condition: or
+      conditions:
+      - condition: trigger
+        id:
+        - Liberado
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.quarto_nicole
+      data: {}
+  mode: restart

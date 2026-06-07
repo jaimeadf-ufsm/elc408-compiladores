@@ -1,0 +1,51 @@
+- id: '1724530319511'
+  alias: Lavabo - 3o botão interruptor
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 9a51076c10d0adead01a5e23ba16e4dc
+    entity_id: 8aa7f9cf78ad1d62f4df88ca2360df73
+    domain: switch
+    id: Liga
+    trigger: device
+  - type: turned_off
+    device_id: 9a51076c10d0adead01a5e23ba16e4dc
+    entity_id: 8aa7f9cf78ad1d62f4df88ca2360df73
+    domain: switch
+    id: Desliga
+    trigger: device
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Liga
+    then:
+    - action: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.espelho_do_lavabo
+        - switch.sonoff_100200129d_2
+  - if:
+    - condition: trigger
+      id:
+      - Desliga
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.sonoff_100200129d_3
+        - switch.sonoff_100200129d_2
+        - switch.sonoff_100200129d_1
+        - switch.espelho_do_lavabo
+      data: {}
+    - action: notify.mobile_app_zfold4
+      metadata: {}
+      data:
+        message: Lavabo
+  mode: restart

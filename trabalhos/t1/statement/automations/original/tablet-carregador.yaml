@@ -1,0 +1,77 @@
+- id: '1722827110327'
+  alias: Tablet - carregador
+  description: ''
+  triggers:
+  - type: battery_level
+    device_id: 033813d16b9570ea8ed3fe2ee4e908e9
+    entity_id: d46e6d632a36b57b7c07b1885c32ad88
+    domain: sensor
+    trigger: device
+    id: '- de 20'
+    below: 20
+  - type: battery_level
+    device_id: 033813d16b9570ea8ed3fe2ee4e908e9
+    entity_id: d46e6d632a36b57b7c07b1885c32ad88
+    domain: sensor
+    trigger: device
+    id: + de 75
+    above: 75
+  - type: battery_level
+    device_id: 033813d16b9570ea8ed3fe2ee4e908e9
+    entity_id: d46e6d632a36b57b7c07b1885c32ad88
+    domain: sensor
+    trigger: device
+    id: '- de 10'
+    below: 10
+  - type: battery_level
+    device_id: 033813d16b9570ea8ed3fe2ee4e908e9
+    entity_id: d46e6d632a36b57b7c07b1885c32ad88
+    domain: sensor
+    trigger: device
+    id: '- de 5'
+    below: 5
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - + de 75
+      sequence:
+      - type: turn_off
+        device_id: bda1f38607c9e810f10b241569f46c77
+        entity_id: 6a55b660d511de43c42b534c2f201dbb
+        domain: switch
+      - metadata: {}
+        data:
+          message: Tablet descarregando
+        action: notify.mobile_app_zfold4
+    - conditions:
+      - condition: trigger
+        id:
+        - '- de 20'
+        - '- de 10'
+      sequence:
+      - type: turn_on
+        device_id: bda1f38607c9e810f10b241569f46c77
+        entity_id: 6a55b660d511de43c42b534c2f201dbb
+        domain: switch
+      - metadata: {}
+        data:
+          message: Tablet carregando
+        action: notify.mobile_app_zfold4
+    - conditions:
+      - condition: trigger
+        id:
+        - '- de 5'
+      sequence:
+      - type: turn_on
+        device_id: bda1f38607c9e810f10b241569f46c77
+        entity_id: 6a55b660d511de43c42b534c2f201dbb
+        domain: switch
+      - metadata: {}
+        data:
+          message: Tablet carregando
+          title: 'Tablet zerado de bateria '
+        action: notify.mobile_app_zfold4
+  mode: single

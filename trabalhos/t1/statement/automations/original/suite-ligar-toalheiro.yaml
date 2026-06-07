@@ -1,0 +1,47 @@
+- id: '1749856006086'
+  alias: 'Suite - ligar toalheiro '
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 6fd6b17870c0345ad8bf36fb086fca49
+    entity_id: 57b28338c5ca8de7d7763d4539ce4e07
+    domain: switch
+    trigger: device
+  - type: turned_on
+    device_id: df57e4531b088a9e6a4f332bfd0f66f3
+    entity_id: f3669be2d38feb3b98c2d8c46ff1b0c6
+    domain: switch
+    trigger: device
+  - type: volume_flow_rate
+    device_id: 29a6e005da8e23c1addc976e2d2aab4c
+    entity_id: 309e55113b9cbea58b69fcbbedb21811
+    domain: sensor
+    trigger: device
+    above: 2
+  conditions:
+  - condition: time
+    after: 15:00:00
+    before: 23:59:00
+    weekday:
+    - sat
+    - fri
+    - thu
+    - wed
+    - tue
+    - mon
+    - sun
+  actions:
+  - type: turn_on
+    device_id: 97b68274650665a6a725177e60ee469c
+    entity_id: 5e57f3722928049f33c44caf233138cd
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 35
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 97b68274650665a6a725177e60ee469c
+    entity_id: 5e57f3722928049f33c44caf233138cd
+    domain: switch
+  mode: single

@@ -1,0 +1,95 @@
+- id: '1752884868994'
+  alias: Eric - Movimento
+  description: ''
+  triggers:
+    - trigger: state
+      entity_id: timer.quarto_eric
+      to: idle
+      id: Movimento_ocioso
+      alias: Movimento Ocioso
+    - trigger: state
+      entity_id: binary_sensor.eric_motion_sensor_movimento
+      to: "on"
+      id: Movimento
+    - trigger: state
+      entity_id: binary_sensor.eric_motion_sensor_movimento
+      to: "off"
+      id: Liberado
+    - trigger: state
+      entity_id: switch.luzes_do_eric
+      to: "on"
+      id: Interruptores
+    - trigger: state
+      entity_id: binary_sensor.eric_motion_sensor_quarto
+      to: "on"
+      id: Movimento2
+    - trigger: state
+      entity_id: binary_sensor.eric_motion_sensor_quarto
+      to: "off"
+      id: Liberado2
+  conditions:
+    - condition: state
+      entity_id: alarm_control_panel.alarmo
+      state: disarmed
+  actions:
+    - if:
+        - condition: trigger
+          id:
+            - Movimento
+            - Interruptores
+            - Movimento2
+      then:
+        - action: timer.start
+          target:
+            entity_id: timer.quarto_eric
+        - if:
+            - condition: state
+              entity_id: alarm_control_panel.alarmo
+              state: disarmed
+            - condition: state
+              entity_id: switch.sonoff_10018dee48_3
+              state: "off"
+          then:
+            - action: switch.turn_on
+              target:
+                entity_id: switch.sonoff_10018de98b_3
+            - action: light.turn_on
+              target:
+                entity_id: light.1e5dbd
+    - if:
+        - condition: trigger
+          id: Movimento_ocioso
+      then:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.sonoff_10018de98b_1
+        - delay: "00:01:00"
+        - action: switch.turn_off
+          target:
+            entity_id:
+              - switch.eric_nichos_interruptor_1
+              - switch.sonoff_10018de98b_1
+        - delay: "00:01:00"
+        - action: switch.turn_off
+          target:
+            entity_id:
+              - switch.luzes_do_eric
+              - switch.eric_led_da_tv_tomada_1
+              - switch.sonoff_10018de98b_3
+              - switch.wifi_breaker_3_interruptor_1
+        - action: light.turn_off
+          target:
+            entity_id: light.627a27
+        - action: light.turn_off
+          target:
+            entity_id: light.1e5dbd
+    - if:
+        - condition: trigger
+          id:
+            - Liberado
+            - Liberado2
+      then:
+        - action: timer.start
+          target:
+            entity_id: timer.quarto_eric
+  mode: restart

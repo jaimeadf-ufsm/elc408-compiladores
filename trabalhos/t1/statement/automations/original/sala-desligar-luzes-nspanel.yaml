@@ -1,0 +1,52 @@
+- id: '1723433058894'
+  alias: Sala - desligar luzes NSPanel
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 8bab4f915657ed4ea1b1151603b2b9e9
+    entity_id: b2b332adfb28616f2a8a705c922f6ead
+    domain: switch
+    trigger: device
+  conditions:
+  - condition: sun
+    before: sunrise
+    after: sunset
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.luzes_da_cozinha
+      - switch.luzes_da_sala
+      - switch.luzes_do_lavabo
+      - switch.cozinha_nichos_led_interruptor_1
+      device_id:
+      - 499d4ee323725ca01a01affd2726cfc1
+      - 5f9afdf1309a0b93f968874d8987f9ff
+      - b367687260d5c280782ca2662bc32784
+  - action: alexa_devices.send_text_command
+    metadata: {}
+    data:
+      device_id: 38496a203273bbff294d6465d4042e55
+      text_command: desligar tela
+  - action: media_player.turn_off
+    target:
+      entity_id:
+      - media_player.music_frame_2
+      - media_player.music_frame
+      - media_player.nestmini0550
+      - media_player.home_theater_2
+      - media_player.tx_nr5100
+    data: {}
+  - action: alexa_devices.send_text_command
+    metadata: {}
+    data:
+      device_id: 38496a203273bbff294d6465d4042e55
+      text_command: desligar tela
+  - action: alexa_devices.send_text_command
+    metadata: {}
+    data:
+      text_command: desligar tela
+      device_id: 43ae6cf18c1b53649e81393dee7d7daa
+  mode: single

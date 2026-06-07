@@ -1,0 +1,12 @@
+- id: '1763259487234'
+  alias: Sala - Desligar LED Sanca
+  description: ''
+  triggers:
+    - trigger: time
+      at: "05:00:00"
+  conditions: []
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id: light.973148
+  mode: single

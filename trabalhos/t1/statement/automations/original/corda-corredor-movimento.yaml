@@ -1,0 +1,51 @@
+- id: '1722215033727'
+  alias: Corda Corredor - movimento
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.corredor_suite_luminance_motion_sensor_movimento
+    - binary_sensor.tz3000_6ygjfyll_ts0202
+    - binary_sensor.motion_sensor_movimento
+    to:
+    - on
+    trigger: state
+  conditions:
+  - condition: device
+    type: is_on
+    device_id: 17577b83efd0951c4002cd6c7b91053c
+    entity_id: bb97c45f407329aca067d3f274499a81
+    domain: switch
+  - condition: device
+    device_id: 5e51e34745f04cf7f80d7a374d922d6f
+    domain: alarm_control_panel
+    entity_id: 37dc24654a788314bfb4de2e2c827fd0
+    type: is_disarmed
+  - condition: state
+    entity_id: light.corda_led_corredor
+    state: off
+  actions:
+  - type: turn_on
+    device_id: fbbfb3abd57bee6b19cc076ec0fd1b49
+    entity_id: a4595b3013d5c452494f933e1e104129
+    domain: light
+  - if:
+    - condition: time
+      after: 01:15:00
+      before: 12:00:00
+    then:
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 45
+        milliseconds: 0
+    else:
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 45
+        milliseconds: 0
+  - type: turn_off
+    device_id: fbbfb3abd57bee6b19cc076ec0fd1b49
+    entity_id: a4595b3013d5c452494f933e1e104129
+    domain: light
+  mode: restart

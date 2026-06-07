@@ -1,0 +1,102 @@
+- id: '1749434533565'
+  alias: Suite - movimento
+  description: ''
+  triggers:
+  - entity_id:
+    - timer.suite
+    to: idle
+    id: Ocioso
+    trigger: state
+  - entity_id:
+    - timer.suite
+    to: active
+    id: Movimento
+    trigger: state
+  - type: turned_on
+    device_id: 902962bccd850d600c733825ce64149b
+    entity_id: 40cb89919c68a62f97d1c5f343e36f30
+    domain: binary_sensor
+    trigger: device
+    id: Movimento cama
+  - trigger: state
+    entity_id:
+    - binary_sensor.sonoff_a440036eb8
+    to: on
+    id: Detector
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.alarmo
+    state: disarmed
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Movimento
+      - Movimento cama
+      - Detector
+    then:
+    - action: timer.start
+      target:
+        entity_id:
+        - timer.suite
+      data: {}
+    - if:
+      - condition: device
+        type: is_off
+        device_id: 17577b83efd0951c4002cd6c7b91053c
+        entity_id: bb97c45f407329aca067d3f274499a81
+        domain: switch
+      - condition: device
+        device_id: 5e51e34745f04cf7f80d7a374d922d6f
+        domain: alarm_control_panel
+        entity_id: 37dc24654a788314bfb4de2e2c827fd0
+        type: is_disarmed
+      then:
+      - type: turn_on
+        device_id: 9920034bd1123c1923242b68c92e5d7d
+        entity_id: 73f3f45361dd6dd6828b4f132cfcaa4a
+        domain: light
+  - if:
+    - condition: trigger
+      id:
+      - Ocioso
+    then:
+    - type: turn_off
+      device_id: b2f2ddf08a4b8e321fa259c76df42cef
+      entity_id: e6bd5f71286d23ea1c87b580aea4407c
+      domain: switch
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 30
+        milliseconds: 0
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.arandela_suite
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 30
+        milliseconds: 0
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.arandela_suite
+    - type: turn_off
+      device_id: 6fd6b17870c0345ad8bf36fb086fca49
+      entity_id: 726fc9c450c2044cc6bf5b4d8508436c
+      domain: switch
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 30
+        milliseconds: 0
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.luzes_da_suite
+  mode: restart

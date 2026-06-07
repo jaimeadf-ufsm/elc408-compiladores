@@ -1,0 +1,73 @@
+- id: '1752867667206'
+  alias: Nicole - Movimento
+  description: ''
+  triggers:
+    - trigger: state
+      entity_id: timer.quarto_nicole
+      to: idle
+      id: Movimento_ocioso
+      alias: Movimento Ocioso
+    - trigger: state
+      entity_id: binary_sensor.tze200
+      to: "on"
+      id: Movimento
+    - trigger: state
+      entity_id: binary_sensor.tze200
+      to: "off"
+      id: Liberado
+  conditions:
+    - condition: state
+      entity_id: alarm_control_panel.alarmo
+      state: disarmed
+  actions:
+    - if:
+        - condition: trigger
+          id: Movimento
+      then:
+        - action: timer.start
+          target:
+            entity_id: timer.quarto_nicole
+        - if:
+            - condition: state
+              entity_id: switch.sonoff_10018dee48_3
+              state: "off"
+          then:
+            - action: switch.turn_on
+              target:
+                entity_id: switch.sonoff_10026c409b_1
+            - action: light.turn_on
+              target:
+                entity_id: light.7fdd51
+              data:
+                brightness_pct: 100
+    - if:
+        - condition: trigger
+          id: Movimento_ocioso
+      then:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.sonoff_10026c409b_2
+        - delay: "00:01:00"
+        - action: switch.turn_off
+          target:
+            entity_id: switch.sonoff_10026c409b_1
+        - delay: "00:01:00"
+        - action: media_player.turn_off
+          target:
+            entity_id: media_player.afab14
+        - action: switch.turn_off
+          target:
+            entity_id:
+              - switch.luzes_da_nicole
+              - switch.espelho_banheiro_nicole_interruptor_1
+        - action: light.turn_off
+          target:
+            entity_id: light.7fdd51
+    - if:
+        - condition: trigger
+          id: Liberado
+      then:
+        - action: timer.start
+          target:
+            entity_id: timer.quarto_nicole
+  mode: restart

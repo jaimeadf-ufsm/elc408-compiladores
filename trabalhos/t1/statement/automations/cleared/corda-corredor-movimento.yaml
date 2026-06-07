@@ -1,0 +1,36 @@
+- id: '1722215033727'
+  alias: Corda Corredor - Movimento
+  description: ''
+  triggers:
+    - trigger: state
+      entity_id:
+        - binary_sensor.corredor_suite_luminance_motion_sensor_movimento
+        - binary_sensor.tz3000
+        - binary_sensor.motion_sensor_movimento
+      to: "on"
+  conditions:
+    - condition: state
+      entity_id: switch.bb97c4
+      state: "on"
+    - condition: state
+      entity_id: alarm_control_panel.alarmo
+      state: disarmed
+    - condition: state
+      entity_id: light.corda_led_corredor
+      state: "off"
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.a4595b
+    - if:
+        - condition: time
+          after: "01:15:00"
+          before: "12:00:00"
+      then:
+        - delay: "00:00:45"
+      else:
+        - delay: "00:01:45"
+    - action: light.turn_off
+      target:
+        entity_id: light.a4595b
+  mode: restart

@@ -1,0 +1,211 @@
+// ============================================================
+//  Jass Language — Reference Example
+// ============================================================
+
+// --- Declarations ---------------------------------------------------
+// 'def' creates a short alias for a Home Assistant entity_id.
+// The type is inferred from the domain prefix (light → light,
+// sensor → sensor, binary_sensor → read-only binary, etc.).
+// Aliases are optional: full entity_ids can be used inline anywhere.
+
+def lamp       = light.living_room
+def lamp2      = light.kitchen
+def temp       = sensor.outside_temperature
+def motion     = binary_sensor.hallway
+def thermostat = climate.home
+def forecast   = weather.forecast_home
+def alexa      = notify.alexa_speak
+
+// Semantic rules derived from the domain:
+//   light.*          → turn_on, turn_off, toggle  (+ brightness, color, transition)
+//   switch.*         → turn_on, turn_off, toggle
+//   sensor.*         → read-only (triggers/conditions only, never a target)
+//   binary_sensor.*  → read-only
+//   climate.*        → turn_on, turn_off, set_temperature
+//   notify.*         → notify
+//   tts.*            → speak
+//   automation.*     → trigger
+//   cover.*          → open, close, stop
+//   any domain       → exec (bypasses all validation)
+
+// Must validate the attributes, 
+
+// --- Automation block -----------------------------------------------
+// 'automation "Name"' opens a block. Name is optional.
+// Optional metadata: description, mode (single|queued|restart|parallel), max.
+
+automation "Climate Comfort" {
+    description "Adjusts home based on temperature and presence"
+    mode queued
+    max 5
+
+    // --- Triggers (when) --------------------------------------------
+    // At least one required. Commas separate independent triggers
+    // (any one fires the automation — OR semantics in HA).
+    // 'as' assigns an id for later use with 'triggered by'.
+    // Trailing commas are allowed.
+
+    when (
+        // state change: changes [from VAL] [to VAL] [for DURATION]
+        // from/to accept a single value or a list
+        motion changes to "on" as "presence",
+        lamp changes from ["off", "unavailable"] to ["on"] as "lamp_on",
+
+        // state held for a minimum duration
+        motion changes to "off" for 10m as "no_motion",
+
+        // time trigger (HH:MM:SS)
+        07:00:00 as "morning",
+
+        // sun triggers with optional offset
+        sunset - 30m as "dusk",
+        sunrise as "dawn",
+
+        // numeric state: supports >, >=, <, <= with optional 'for'
+        temp >= 30 for 5m as "hot",
+        temp < 5 as "cold",
+
+        // decorator disables a trigger without removing it
+        @enabled(false)
+        23:00:00 as "bedtime",
+    )
+
+    // --- Conditions (if) --------------------------------------------
+    // Optional. Evaluated after a trigger fires, before actions run.
+    // Comma (,) separates top-level conditions → each becomes its own
+    //   YAML condition entry (implicitly ANDed by HA).
+    // 'and' / 'or' combine expressions inside a group → generates
+    //   explicit 'condition: and' / 'condition: or' blocks in YAML.
+    // 'not' negates. Parentheses group.
+    // Precedence:  comparisons (==, !=, >=, <, in)  >  not  >  and  >  or
+
+    if (
+        after 06:00:00,
+        before 23:00:00,
+        on [mon, tue, wed, thu, fri],
+        before sunset + 10m,
+        after sunrise,
+
+        // 'or' produces a condition:or block in YAML
+        (temp >= 28 or forecast in ["sunny", "partlycloudy"]),
+
+        // 'not' negates the comparison
+        not lamp == "unavailable",
+
+        // decorators apply to the next condition
+        @enabled(false)
+        thermostat != "off"
+    )
+
+    // --- Actions (do) -----------------------------------------------
+    // Executed in order.
+
+    do {
+        // --- built-in verbs (validated against entity domain) -------
+        turn_on lamp
+        turn_off lamp2
+        toggle switch.porch        // inline entity, no 'def' needed
+
+        // parameters via object literal { key: value, ... }
+        // supported value types: number, "string", true/false,
+        //   10% (percentage), 3s/5m/1h30m (duration),
+        //   #FF8C00 (hex color), rgb(255, 120, 0)
+
+        // --- attribute validation ------------------------------------
+        // The semantic analyzer validates attributes in two layers:
+        //   1. Is the attribute valid for this domain + verb?
+        //      e.g., 'brightness' is valid for light.turn_on,
+        //            but NOT for switch.turn_on.
+        //   2. Is the value type correct for the attribute?
+        //      Each attribute has an expected type:
+        //
+        //      brightness  → PERCENTAGE or NUMBER    (not rgb, not string)
+        //      color       → HEX_COLOR or RGB        (not percentage, not number)
+        //      transition  → DURATION                 (not number, not string)
+        //      color_temp  → NUMBER                   (not rgb, not percentage)
+        //      temperature → NUMBER                   (not string, not rgb)
+        //      message     → STRING                   (not number, not rgb)
+        //      cache       → BOOLEAN                  (not string, not number)
+        turn_on [lamp, lamp2] {
+            brightness: 75%,
+            color: #1E90FF,
+            transition: 2s
+        }
+
+        // !! ERROR: color expects hex or rgb, got percentage
+        // turn_on lamp { color: 75% }
+
+        // delay
+        delay 3s
+        delay 1h30m
+
+        // notify (target must be notify.* domain)
+        notify alexa { message: "Welcome home!" }
+
+        // speak (target must be tts.* domain)
+        speak tts.google_tts {
+            message: "Temperature is high",
+            media_player_entity_id: "media_player.kitchen"
+        }
+
+        // trigger another automation
+        trigger automation.close_garage { skip_condition: true }
+
+        // --- exec (escape hatch, no semantic validation) ------------
+        // with target entity
+        @alias("Start vacuum")
+        @continue_on_error()
+        exec "vacuum.start" vacuum.living_room { fan_speed: "turbo" }
+
+        // without target entity
+        exec "script.announce" { message: "Alert!" }
+
+        // nested objects and arrays are supported
+        exec "script.complex" {
+            level: 3,
+            config: {
+                tags: ["urgent", "home"],
+                nested: { key: "value" }
+            }
+        }
+
+        // --- conditional actions (if / elif / else) -----------------
+        // maps to HA 'choose' action.
+        // 'triggered by' checks which trigger id fired.
+
+        if (triggered by ["presence"]) {
+            turn_on lamp { brightness: 100% }
+        }
+        elif (triggered by ["dusk", "morning"]) {
+            turn_on lamp { brightness: 40%, transition: 10s }
+        }
+        elif (
+            forecast in ["rainy", "pouring", "snowy"] or
+            temp < 10
+        ) {
+            notify alexa { message: "Rough weather — stay cozy." }
+        }
+        elif (not lamp == "on", lamp2 != "on") {
+            // comma here is AND: both conditions must be true
+            turn_on [lamp, lamp2]
+        } else {
+            turn_off [lamp, lamp2]
+        }
+
+        // decorated block → becomes a named sequence in YAML
+        @alias("Final step")
+        {
+            notify alexa { message: "Routine complete." }
+        }
+    }
+}
+
+// --- Minimal automation (shows optional parts) ----------------------
+// No description, no mode, no conditions, single trigger, single action.
+
+automation {
+    when (lamp changes to "on")
+    do {
+        notify alexa { message: "A light was turned on." }
+    }
+}

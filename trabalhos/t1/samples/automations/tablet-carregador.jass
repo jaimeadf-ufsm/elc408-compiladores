@@ -1,0 +1,23 @@
+automation "Tablet - Carregador" {
+    mode = "single"
+
+    when (
+        sensor.d46e6d < 20 as "- de 20" or
+        sensor.d46e6d > 75 as "+ de 75" or
+        sensor.d46e6d < 10 as "- de 10" or
+        sensor.d46e6d < 5 as "- de 5"
+    )
+
+    do {
+        if (triggeredby "+ de 75") {
+            turn_off(switch.6a55b6)
+            call("notify.mobile_app_zfold4", data={"message": "Tablet descarregando"})
+        } elif (triggeredby "- de 20" or triggeredby "- de 10") {
+            turn_on(switch.6a55b6)
+            call("notify.mobile_app_zfold4", data={"message": "Tablet carregando"})
+        } elif (triggeredby "- de 5") {
+            turn_on(switch.6a55b6)
+            call("notify.mobile_app_zfold4", data={"message": "Tablet carregando", "title": "Tablet zerado de bateria"})
+        }
+    }
+}

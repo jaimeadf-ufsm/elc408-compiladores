@@ -1,0 +1,27 @@
+// triggeredby references ID "presenca" which is never declared
+automation "Erro Semântico 1 - ID de Trigger Inexistente" {
+    when (
+        binary_sensor.sala changes to "on" as "movimento"
+    )
+    do {
+        if (triggeredby "presenca") {
+            turn_on(light.sala)
+        }
+    }
+}
+
+// light and switch cannot share the same action call
+automation "Erro Semântico 2 - Domínios Misturados" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on([light.sala, switch.ventilador])
+    }
+}
+
+// color expects a color but received a duration
+automation "Erro Semântico 2 - Domínios Misturados" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(light.sala, color=1m)
+    }
+}

@@ -1,0 +1,51 @@
+automation "Sala - Movimento" {
+    mode = "restart"
+
+    when (
+        timer.sala changes to "idle" as "Movimento_ocioso" or
+        binary_sensor.sala_motion_sensor changes to "on" as "Movimento" or
+        binary_sensor.cozinha_motion_sensor_movimento_2 changes to "on" as "CozinhaMovimento" or
+        binary_sensor.sala_motion_sensor changes to "off" as "Liberado" or
+        binary_sensor.corredor_motion_sensor_pro_movimento changes to "on" as "Movimento Pro" or
+        binary_sensor.corredor_motion_sensor_pro_movimento changes to "off" as "Liberado" or
+        light.luzes_da_sala changes from "on" as "Luzes ligada"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Movimento" or triggeredby "CozinhaMovimento" or triggeredby "Movimento Pro") {
+            call("timer.start", target=timer.sala)
+            if (
+                switch.sonoff_10018dee48_3 == "on" and
+                alarm_control_panel.37dc24 == "disarmed" and
+                switch.luzes_da_sala == "off" and
+                media_player.eea259 == "off" and
+                after sunset and before sunrise
+            ) {
+                turn_on(switch.sonoff_10021a5971_2)
+                delay(3m)
+                turn_off(switch.sonoff_10021a5971_2)
+            }
+        }
+
+        volume(media_player.music_frame, 0.09)
+
+        if (triggeredby "Movimento_ocioso") {
+            volume(media_player.music_frame_2, 0.11)
+            turn_off(switch.sonoff_1002036351_1)
+            say(tts.google_en_com, target=media_player.music_frame_2, message="Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue alguma luz ou se movimente.", language="pt")
+            delay(1m)
+            say(tts.google_en_com, target=media_player.music_frame_2, message="Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue alguma luz ou se movimente.", language="pt")
+            turn_off(switch.sonoff_1002036186_2)
+            delay(1m)
+            // disabled: turn_off(media_player.music_frame_2)
+            turn_off(switch.luzes_da_sala)
+            call("alexa_devices.send_text_command", data={"device_id": "38496a", "text_command": "desligar tela"})
+        }
+
+        if (triggeredby "Liberado") {
+            call("timer.start", target=timer.sala)
+        }
+    }
+}

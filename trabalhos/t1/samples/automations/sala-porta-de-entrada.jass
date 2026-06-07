@@ -1,0 +1,25 @@
+automation "Sala - Porta de Entrada" {
+    mode = "single"
+
+    when (
+        binary_sensor.b729bf changes to "on" as "Aberta" or
+        binary_sensor.b729bf changes to "on" for 1m as "Aberta 1 min" or
+        binary_sensor.b729bf changes to "off" as "Fechada"
+    )
+
+    do {
+        if (
+            triggeredby "Aberta" and
+            switch.luzes_da_sala == "off" and
+            media_player.eea259 == "off" and
+            media_player.ccc6d6 == "off"
+        ) {
+            turn_on(light.67a209)
+            call("notify.mobile_app_zfold4", data={"message": "Porta aberta e luz de entrada ligada!"})
+        }
+        if (triggeredby "Aberta 1 min") {
+            call("notify.send_message", target=[notify.echo_show_8_speak, notify.music_frame_alexa_speak], data={"message": "Porta aberta há mais de 1 minuto!"})
+            call("notify.mobile_app_zfold4", data={"message": "Porta aberta por 1 minuto!"})
+        }
+    }
+}

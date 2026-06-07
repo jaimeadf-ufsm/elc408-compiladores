@@ -1,0 +1,36 @@
+automation "Por do Sol" {
+    description = "Liga dispositivos em horários diferentes dependendo do clima (Chuva: -1h30, Nublado: -1h15, Sol: -45min)"
+    mode = "single"
+
+    when (
+        sunset - 1h30m as "chuva" or
+        sunset - 1h15m as "nublado" or
+        sunset - 45m as "sol"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (
+            weather.forecast_casa == "rainy" or
+            weather.forecast_casa == "pouring" or
+            weather.forecast_casa == "lightning-rainy" or
+            weather.forecast_casa == "hail" or
+            weather.forecast_casa == "snowy"
+        ) {
+            run(automation.cozinha_ligar_luzes, skip_condition=True)
+        } elif (
+            (
+                weather.forecast_casa == "cloudy" or
+                weather.forecast_casa == "windy-variant" or
+                weather.forecast_casa == "fog" or
+                weather.forecast_casa == "partlycloudy" or
+                weather.forecast_casa == "windy"
+            ) and switch.eff060 == "off"
+        ) {
+            run(automation.cozinha_ligar_luzes, skip_condition=True)
+        } elif (triggeredby "sol") {
+            run(automation.cozinha_ligar_luzes, skip_condition=True)
+        }
+    }
+}

@@ -1,0 +1,27 @@
+automation "Corredor - Movimento" {
+    mode = "restart"
+
+    when (
+        timer.corredor changes to "idle" as "Movimento_ocioso" or
+        binary_sensor.motion_sensor_movimento changes to "on" as "Movimento1" or
+        binary_sensor.corredor_suite_luminance_motion_sensor_movimento changes to "on" as "Movimento2" or
+        binary_sensor.tz3000 changes to "on" as "Movimento3"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Movimento1" or triggeredby "Movimento2" or triggeredby "Movimento3") {
+            call("timer.start", target=timer.corredor)
+            if (switch.sonoff_10018dee48_3 == "off" and alarm_control_panel.alarmo == "disarmed") {
+                if (before @23:00:00) {
+                    turn_on(switch.sonoff_10018dee48_1)
+                } else {
+                    turn_on(switch.sonoff_100203a579_1)
+                }
+            }
+        } elif (triggeredby "Movimento_ocioso") {
+            turn_off([switch.sonoff_10018dee48_1, switch.sonoff_100203a579_1])
+        }
+    }
+}

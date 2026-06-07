@@ -1,0 +1,25 @@
+automation "Corda Corredor - Movimento" {
+    mode = "restart"
+
+    when (
+        binary_sensor.corredor_suite_luminance_motion_sensor_movimento changes to "on" or
+        binary_sensor.tz3000 changes to "on" or
+        binary_sensor.motion_sensor_movimento changes to "on"
+    )
+
+    if (
+        switch.bb97c4 == "on" and
+        alarm_control_panel.alarmo == "disarmed" and
+        light.corda_led_corredor == "off"
+    )
+
+    do {
+        turn_on(light.a4595b)
+        if (after @01:15:00 and before @12:00:00) {
+            delay(45s)
+        } else {
+            delay(1m45s)
+        }
+        turn_off(light.a4595b)
+    }
+}

@@ -1,0 +1,18 @@
+automation "Suíte - Cortinas" {
+    mode = "single"
+
+    when (
+        @22:30:00 as "Abrir blackout" or
+        @12:30:00 as "Abrir cortina"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Abrir blackout") {
+            open(cover.8e38e2)
+        } elif (triggeredby "Abrir cortina") {
+            close(cover.8e38e2)
+        }
+    }
+}

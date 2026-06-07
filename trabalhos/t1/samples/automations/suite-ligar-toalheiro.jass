@@ -1,0 +1,21 @@
+automation "Suite - Ligar Toalheiro" {
+    mode = "single"
+
+    when (
+        switch.57b283 changes to "on" or
+        switch.f3669b changes to "on" or
+        sensor.309e55 > 2
+    )
+
+    if (
+        after @15:00:00 and
+        before @23:59:00 and
+        on ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+    )
+
+    do {
+        turn_on(switch.5e57f3)
+        delay(35m)
+        turn_off(switch.5e57f3)
+    }
+}

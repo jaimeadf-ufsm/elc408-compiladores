@@ -1,3 +1,14 @@
+// variables (aliases): 'def NAME = VALUE'
+// - every use is type-checked exactly as if the value were written inline
+// - two scopes: file-level (global, usable by any automation below) and
+//   block-level (local to the { } it is declared in; shadows outer names)
+// - only exists in compile time
+
+def main_lamp  = light.living_room   // entity alias   (type: light entity)
+def warm_white = rgb(255, 180, 80)   // color alias    (type: color)
+def grace      = 10m                 // duration alias (type: duration)
+def comfort    = 22                  // number alias   (type: number)
+
 // automation [NAME] { ... }
 automation "Climate Comfort" {
     // metadata
@@ -119,6 +130,51 @@ automation "Climate Comfort" {
         }
     }
 }
+
+// variables
+automation "Evening Wind Down" {
+    when (
+        // an alias can stand in for an entity anywhere an entity ref is allowed
+        main_lamp changes to "on" as "lamp_on" or
+        // ...and for a value: 'comfort' (a number) is fine as a numeric threshold
+        sensor.living_room_temperature < comfort as "chilly"
+    )
+
+    do {
+        // global aliases, fully type-checked at the use site:
+        // main_lamp is a light, so 'color' is accepted; transition wants a duration
+        turn_on(main_lamp, color=warm_white, transition=grace)
+
+        // the alias never relaxes a rule — these stay compile errors:
+        // turn_on(switch.porch, color=warm_white)  // switch.turn_on has no 'color'
+        // delay(warm_white)                         // delay wants a duration, got a color
+
+        // block-level alias: in scope from here to the end of this do-block
+        def dim = rgb(40, 20, 0)
+
+        if (triggeredby "chilly") {
+            // shadowing: this local 'warm_white' hides the global one in this block
+            def warm_white = rgb(255, 120, 40)
+            turn_on(main_lamp, color=warm_white)   // -> the local (oranger) value
+
+            def boost = 100
+            turn_on(main_lamp, brightness=boost)
+        }
+        else {
+            // back to the global 'warm_white' here; 'dim' is still in scope
+            turn_on(main_lamp, color=warm_white)
+            turn_on(main_lamp, color=dim)
+        }
+
+        // turn_on(main_lamp, brightness=boost)
+        //   -> compile error: 'boost' is undeclared here (local to the if-block above)
+
+        safe {
+            toggle(main_lamp)   // 'dim'/'main_lamp' visible: enclosing do-block in scope
+        }
+    }
+}
+
 
 // minimal automation:
 // - single trigger

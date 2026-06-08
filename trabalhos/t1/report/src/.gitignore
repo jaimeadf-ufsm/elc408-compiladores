@@ -1,0 +1,61 @@
+# Compiled output
+*.pdf
+*.dvi
+*.ps
+*.xdv
+
+# Auxiliary files
+*.aux
+*.fls
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+
+# Bibliography
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+
+# Glossaries
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
+
+# Indices
+*.idx
+*.ilg
+*.ind
+
+# Counters & cross-references
+*.loe
+*.nav
+*.snm
+*.vrb
+
+# Beamer
+*.nav
+*.snm
+*.vrb
+
+# todonotes
+*.tdo
+
+# Editor files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+_minted

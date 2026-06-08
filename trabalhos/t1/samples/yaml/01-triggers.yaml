@@ -1,4 +1,5 @@
-  - alias: "Gatilhos de estado"
+  - id: "1780950851"
+    alias: "Gatilhos de estado"
     mode: "single"
     triggers:
       - trigger: state
@@ -22,7 +23,8 @@
       - action: light.turn_on
         target:
           entity_id: light.sala
-  - alias: "Gatilhos numéricos"
+  - id: "1780950851"
+    alias: "Gatilhos numéricos"
     mode: "single"
     triggers:
       - trigger: numeric_state
@@ -36,7 +38,8 @@
       - action: switch.turn_on
         target:
           entity_id: switch.ventilador
-  - alias: "Gatilhos de horário e solares"
+  - id: "1780950851"
+    alias: "Gatilhos de horário e solares"
     mode: "single"
     triggers:
       - trigger: time

@@ -1,0 +1,23 @@
+automation "Declaração" {
+    when(light.sala changes)
+
+    do {
+        turn_on(luz)
+    }
+}
+
+automation "Tipo" {
+    when(light.sala changes)
+
+    do {
+        turn_on(light.sala, color=2s)
+    }
+}
+
+automation "Ação e domínio" {
+    when(light.sala changes)
+
+    do {
+        turn_on([light.sala, timer.sala])
+    }
+}

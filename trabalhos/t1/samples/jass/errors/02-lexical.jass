@@ -1,0 +1,6 @@
+// Literal de horário malformado: '@7:00:00' tem a hora com um só dígito
+//    (o token TIME exige @HH:MM:SS, com dois dígitos em cada campo).
+automation "Horario malformado" {
+    when (@7:00:00)
+    do { }
+}

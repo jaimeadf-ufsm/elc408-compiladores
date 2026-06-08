@@ -1,4 +1,5 @@
-  - alias: "Tablet - Carregador"
+  - id: "1780950852"
+    alias: "Tablet - Carregador"
     mode: "single"
     triggers:
       - trigger: numeric_state

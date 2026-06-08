@@ -1,4 +1,5 @@
-  - alias: "Condicionais simples"
+  - id: "1780950851"
+    alias: "Condicionais simples"
     mode: "single"
     triggers:
       - trigger: numeric_state
@@ -29,7 +30,8 @@
               - action: switch.toggle
                 target:
                   entity_id: switch.carregador
-  - alias: "Condicionais aninhados"
+  - id: "1780950851"
+    alias: "Condicionais aninhados"
     mode: "single"
     triggers:
       - trigger: state
@@ -48,7 +50,8 @@
               - action: light.turn_on
                 target:
                   entity_id: light.sala
-  - alias: "Bloco safe"
+  - id: "1780950851"
+    alias: "Bloco safe"
     mode: "single"
     triggers:
       - trigger: state

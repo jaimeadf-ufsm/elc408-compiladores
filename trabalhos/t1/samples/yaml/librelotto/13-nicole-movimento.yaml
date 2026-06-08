@@ -1,4 +1,5 @@
-  - alias: "Nicole - Movimento"
+  - id: "1780950853"
+    alias: "Nicole - Movimento"
     mode: "restart"
     triggers:
       - trigger: state

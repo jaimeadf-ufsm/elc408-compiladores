@@ -1,0 +1,7 @@
+// String não terminada: falta a aspa de fechamento.
+automation "String não terminada" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        say(tts.sala, message="aviso)
+    }
+}

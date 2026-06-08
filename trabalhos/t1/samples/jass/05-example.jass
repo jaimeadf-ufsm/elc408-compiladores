@@ -1,0 +1,29 @@
+def lampada   = light.sala
+def amarelo   = rgb(255, 150, 60)
+def tempo     = 5m
+
+automation "Luz Sala" {
+    description = "Ligar a luz quando ha movimento ou ao anoitecer"
+    mode = "restart"
+
+    when (
+        binary_sensor.sala changes to "on" as "movimento" or
+        sunset - 15m as "anoitecer"
+    )
+
+    if (
+        between sunset sunrise and
+        alarm_control_panel.casa == "disarmed"
+    )
+
+    do {
+        turn_on(lampada, color=amarelo, transition=2s)
+
+        if (triggeredby "movimento") {
+            delay(tempo)
+            turn_off(lampada)
+        } else {
+            say(tts.sala, player=media_player.sala, message="Bom anoitecer")
+        }
+    }
+}

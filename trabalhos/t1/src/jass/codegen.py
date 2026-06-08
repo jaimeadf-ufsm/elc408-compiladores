@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import time
 
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as Quoted
@@ -42,6 +43,7 @@ class CodeGen:
     def gen_automation(self, automation: ast.Automation) -> dict:
         meta = {entry.key: entry.value for entry in automation.metadata}
         result: dict = {}
+        result["id"] = _q(str(int(time.time())))
         result["alias"] = _q(automation.name or "")
         
         if "description" in meta:

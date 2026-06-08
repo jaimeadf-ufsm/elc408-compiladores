@@ -1,4 +1,5 @@
-  - alias: "Suíte - Cortinas"
+  - id: "1780950853"
+    alias: "Suíte - Cortinas"
     mode: "single"
     triggers:
       - trigger: time

@@ -1,4 +1,5 @@
-  - alias: "Sala - Porta de Entrada"
+  - id: "1780950853"
+    alias: "Sala - Porta de Entrada"
     mode: "single"
     triggers:
       - trigger: state

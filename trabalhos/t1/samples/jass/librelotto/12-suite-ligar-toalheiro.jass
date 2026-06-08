@@ -14,7 +14,7 @@ automation "Suite - Ligar Toalheiro" {
 
     do {
         turn_on(switch.5e57f3)
-        delay(35m)
+        delay(1h35m)
         turn_off(switch.5e57f3)
     }
 }

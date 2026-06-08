@@ -1,0 +1,29 @@
+  - alias: "Suíte - Cortinas"
+    mode: "single"
+    triggers:
+      - trigger: time
+        at: "22:30:00"
+        id: "Abrir blackout"
+      - trigger: time
+        at: "12:30:00"
+        id: "Abrir cortina"
+    conditions:
+      - condition: state
+        entity_id: alarm_control_panel.alarmo
+        state: "disarmed"
+    actions:
+      - if:
+          - condition: trigger
+            id: "Abrir blackout"
+        then:
+          - action: cover.open_cover
+            target:
+              entity_id: cover.8e38e2
+        else:
+          - if:
+              - condition: trigger
+                id: "Abrir cortina"
+            then:
+              - action: cover.close_cover
+                target:
+                  entity_id: cover.8e38e2

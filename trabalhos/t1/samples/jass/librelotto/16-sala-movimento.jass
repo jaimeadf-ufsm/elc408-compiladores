@@ -34,9 +34,9 @@ automation "Sala - Movimento" {
         if (triggeredby "Movimento_ocioso") {
             volume(media_player.music_frame_2, 0.11)
             turn_off(switch.sonoff_1002036351_1)
-            say(tts.google_en_com, target=media_player.music_frame_2, message="Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue alguma luz ou se movimente.", language="pt")
+            say(tts.google_en_com, player=media_player.music_frame_2, message="Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue alguma luz ou se movimente.", language="pt")
             delay(1m)
-            say(tts.google_en_com, target=media_player.music_frame_2, message="Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue alguma luz ou se movimente.", language="pt")
+            say(tts.google_en_com, player=media_player.music_frame_2, message="Atenção! As luzes da sala serão desligadas em 1 minuto! Ligue alguma luz ou se movimente.", language="pt")
             turn_off(switch.sonoff_1002036186_2)
             delay(1m)
             // disabled: turn_off(media_player.music_frame_2)
@@ -45,7 +45,7 @@ automation "Sala - Movimento" {
         }
 
         if (triggeredby "Liberado") {
-            call("timer.start", target=timer.sala)
+            start(timer.sala)
         }
     }
 }

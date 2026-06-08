@@ -1,0 +1,48 @@
+// Toda automação tem um título e duas seções obrigatórias:
+// - 'when' (quando disparar)
+// - 'do' (o que fazer).
+automation "Olá, mundo!" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(light.entrada)        // uma chamada de ação
+    }
+}
+
+// Metadados opcionais vêm antes do 'when':
+// - 'description' é um texto livre para documentação.
+// - 'mode' controla o comportamento de execuções simultâneas.
+// - 'max' limita o número de execuções simultâneas.
+automation "Metadados" {
+    description = "Demonstra metadados e algumas ações"
+    mode = "queued"
+    max = 2
+
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(light.sala)
+        delay(5m)                     // espera 5 minutos
+        turn_off(light.sala)
+    }
+}
+
+// Nem toda ação tem um correspondente amigável. O 'call' permite executar
+// serviços personalizados, com parâmetros arbitrários.
+automation "Serviços externos" {
+    when (binary_sensor.porta changes to "on")
+    do {
+
+        call(
+            "alexa_devices.send_text_command",
+            data={
+                "device_id": "38496a",
+                "text_command": "desligar tela"
+            }
+        )
+    }
+}
+
+// Automação mínima: um único gatilho e um corpo vazio.
+automation "A automação mais útil" {
+    when (binary_sensor.porta changes to "on")
+    do { }
+}

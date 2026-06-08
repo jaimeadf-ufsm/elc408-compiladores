@@ -1,0 +1,54 @@
+  - alias: "Definições globais"
+    mode: "single"
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.temperatura
+        above: 25
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: light.sala
+        data:
+          rgb_color:
+            - 255
+            - 150
+            - 60
+          transition: 2
+      - delay: "00:05:00"
+      - action: light.turn_off
+        target:
+          entity_id: light.sala
+  - alias: "Definições locais e sombreamento"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.sala
+        to: "on"
+        id: "movimento"
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: light.sala
+        data:
+          brightness_pct: 80
+      - if:
+          - condition: trigger
+            id: "movimento"
+        then:
+          - action: light.turn_on
+            target:
+              entity_id: light.sala
+            data:
+              rgb_color:
+                - 255
+                - 150
+                - 60
+        else:
+          - action: light.turn_on
+            target:
+              entity_id: light.sala
+            data:
+              rgb_color:
+                - 255
+                - 150
+                - 60

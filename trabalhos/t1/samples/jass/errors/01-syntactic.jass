@@ -1,0 +1,66 @@
+// Falta a seção 'do' (obrigatória).
+automation "Bloco do ausente" {
+    when (binary_sensor.porta changes to "on")
+    if (alarm_control_panel.alarmo == "disarmed")
+}
+
+// 'or' pendente: espera-se um gatilho após o último 'or'.
+automation "Or pendente" {
+    when (
+        binary_sensor.sala changes to "on" as "sala" or
+        binary_sensor.corredor changes to "on" as "corredor" or
+    )
+    do {
+        turn_on(light.corredor)
+    }
+}
+
+// Seções fora de ordem: 'if' antes de 'when'.
+automation "Seções fora de ordem" {
+    if (alarm_control_panel.alarmo == "disarmed")
+    when (@08:00:00 as "manha")
+    do { }
+}
+
+// Falta a seção 'when' (obrigatória).
+automation "When ausente" {
+    do {
+        turn_on(light.sala)
+    }
+}
+
+// 'when' sem nenhum gatilho.
+automation "When vazio" {
+    when ()
+    do { }
+}
+
+// Uso de '=' onde se espera um operador de comparação ('==').
+automation "Atribuição em condição" {
+    when (binary_sensor.porta changes to "on")
+    if (light.sala = "on")
+    do { }
+}
+
+// Argumento posicional depois de um nomeado.
+automation "Posicional após nomeado" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(color=rgb(255, 0, 0), light.sala)
+    }
+}
+
+// Vírgula sobrando no fim de uma lista.
+automation "Vírgula final em lista" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_off([light.sala, light.cozinha,])
+    }
+}
+
+// 'between' exige dois limites; aqui há apenas um.
+automation "Between incompleto" {
+    when (binary_sensor.porta changes to "on")
+    if (between @08:00:00)
+    do { }
+}

@@ -1,0 +1,114 @@
+// 'triggeredby' referencia um id de gatilho nunca declarado.
+automation "ID de trigger inexistente" {
+    when (binary_sensor.sala changes to "on" as "movimento")
+    do {
+        if (triggeredby "presenca") {
+            turn_on(light.sala)
+        }
+    }
+}
+
+//Um nome usado fora do escopo em que foi definido (local a um bloco interno).
+automation "Alias fora de escopo" {
+    when (binary_sensor.sala changes to "on")
+    do {
+        if (after @10:00:00) {
+            def brilho = 100
+        }
+        turn_on(light.sala, brightness=brilho)   // 'brilho' não existe aqui
+    }
+}
+
+// Todas as entidades de um alvo em lista devem ter o mesmo domínio.
+automation "Domínios misturados no alvo" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on([light.sala, switch.ventilador])
+    }
+}
+
+// Ação que não existe no vocabulário curado.
+automation "Ação desconhecida" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        dance(light.sala)
+    }
+}
+
+// A ação existe, mas não é definida para o domínio do alvo.
+automation "Ação não suportada no domínio" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        open(light.sala)        // 'open' só existe para 'cover'
+    }
+}
+
+// Argumento que a ação não aceita naquele domínio.
+automation "Argumento inexistente no domínio" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(switch.ventilador, color=rgb(255, 0, 0))   // switch não tem 'color'
+    }
+}
+
+// Argumento com tipo incompatível: espera cor, recebe duração.
+automation "Tipo de argumento incompatível" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(light.sala, color=1m)
+    }
+}
+
+// Falta um argumento obrigatório.
+automation "Argumento obrigatório ausente" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        say(tts.sala)           // 'message' é obrigatório
+    }
+}
+
+// Mais argumentos posicionais do que a ação aceita.
+automation "Posicionais demais" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        delay(5m, 10m)          // 'delay' recebe apenas a duração
+    }
+}
+
+// O mesmo argumento informado duas vezes (posicional + nomeado).
+automation "Argumento duplicado" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(light.sala, target=light.cozinha)
+    }
+}
+
+// O alvo de uma ação deve ser uma entidade.
+automation "Alvo não é uma entidade" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on("light.sala")   // uma string, não uma entidade
+    }
+}
+
+// Limiar numérico precisa ser um número (aqui, um alias de texto).
+def nivel = "muito"
+automation "Limiar numérico inválido" {
+    when (sensor.temperatura > nivel)
+    do { }
+}
+
+// 'mode' deve ser um de: single, restart, queued, parallel.
+automation "Metadado mode inválido" {
+    mode = "rapido"
+    when (binary_sensor.porta changes to "on")
+    do { }
+}
+
+// 'max' só é permitido com mode 'queued' ou 'parallel'.
+automation "Metadado max indevido" {
+    mode = "single"
+    max = 3
+    when (binary_sensor.porta changes to "on")
+    do { }
+}

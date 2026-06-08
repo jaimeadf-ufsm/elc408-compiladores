@@ -1,0 +1,44 @@
+  - alias: "Olá, mundo!"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.porta
+        to: "on"
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: light.entrada
+  - alias: "Metadados"
+    description: "Demonstra metadados e algumas ações"
+    mode: "queued"
+    max: 2
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.porta
+        to: "on"
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: light.sala
+      - delay: "00:05:00"
+      - action: light.turn_off
+        target:
+          entity_id: light.sala
+  - alias: "Serviços externos"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.porta
+        to: "on"
+    actions:
+      - action: "alexa_devices.send_text_command"
+        data:
+          device_id: "38496a"
+          text_command: "desligar tela"
+  - alias: "A automação mais útil"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.porta
+        to: "on"
+    actions: []

@@ -1,0 +1,50 @@
+  - alias: "Sala - Porta de Entrada"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.b729bf
+        to: "on"
+        id: "Aberta"
+      - trigger: state
+        entity_id: binary_sensor.b729bf
+        to: "on"
+        for: "00:01:00"
+        id: "Aberta 1 min"
+      - trigger: state
+        entity_id: binary_sensor.b729bf
+        to: "off"
+        id: "Fechada"
+    actions:
+      - if:
+          - condition: trigger
+            id: "Aberta"
+          - condition: state
+            entity_id: switch.luzes_da_sala
+            state: "off"
+          - condition: state
+            entity_id: media_player.eea259
+            state: "off"
+          - condition: state
+            entity_id: media_player.ccc6d6
+            state: "off"
+        then:
+          - action: light.turn_on
+            target:
+              entity_id: light.67a209
+          - action: "notify.mobile_app_zfold4"
+            data:
+              message: "Porta aberta e luz de entrada ligada!"
+      - if:
+          - condition: trigger
+            id: "Aberta 1 min"
+        then:
+          - action: "notify.send_message"
+            target:
+              entity_id:
+                - notify.echo_show_8_speak
+                - notify.music_frame_alexa_speak
+            data:
+              message: "Porta aberta há mais de 1 minuto!"
+          - action: "notify.mobile_app_zfold4"
+            data:
+              message: "Porta aberta por 1 minuto!"

@@ -1,0 +1,35 @@
+automation "Nicole - Movimento" {
+    mode = "restart"
+
+    when (
+        timer.quarto_nicole changes to "idle" as "Movimento_ocioso" or
+        binary_sensor.tze200 changes to "on" as "Movimento" or
+        binary_sensor.tze200 changes to "off" as "Liberado"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Movimento") {
+            start(timer.quarto_nicole)
+            if (switch.sonoff_10018dee48_3 == "off") {
+                turn_on(switch.sonoff_10026c409b_1)
+                turn_on(light.7fdd51, brightness_pct=100)
+            }
+        }
+
+        if (triggeredby "Movimento_ocioso") {
+            turn_off(switch.sonoff_10026c409b_2)
+            delay(1m)
+            turn_off(switch.sonoff_10026c409b_1)
+            delay(1m)
+            turn_off(media_player.afab14)
+            turn_off([switch.luzes_da_nicole, switch.espelho_banheiro_nicole_interruptor_1])
+            turn_off(light.7fdd51)
+        }
+
+        if (triggeredby "Liberado") {
+            start(timer.quarto_nicole)
+        }
+    }
+}

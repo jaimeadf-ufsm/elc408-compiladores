@@ -1,0 +1,39 @@
+// 'if / elif / else' dentro das ações usa a mesma linguagem das condições.
+automation "Condicionais simples" {
+    when (
+        sensor.bateria < 20 as "baixa" or
+        sensor.bateria > 80 as "alta"
+    )
+    do {
+        if (triggeredby "baixa") {
+            turn_on(switch.carregador)
+        } elif (triggeredby "alta") {
+            turn_off(switch.carregador)
+        } else {
+            toggle(switch.carregador)
+        }
+    }
+}
+
+// Condicionais podem ser aninhados.
+automation "Condicionais aninhados" {
+    when (binary_sensor.sala changes to "on")
+    do {
+        if (after @18:00:00) {
+            if (light.sala == "off") {
+                turn_on(light.sala)
+            }
+        }
+    }
+}
+
+// 'safe' agrupa ações que devem prosseguir mesmo que uma delas falhe.
+automation "Bloco safe" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        safe {
+            say(tts.sala, message="Porta aberta")
+            turn_on(light.entrada)
+        }
+    }
+}

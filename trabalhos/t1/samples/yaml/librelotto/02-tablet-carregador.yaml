@@ -1,0 +1,56 @@
+  - alias: "Tablet - Carregador"
+    mode: "single"
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.d46e6d
+        below: 20
+        id: "- de 20"
+      - trigger: numeric_state
+        entity_id: sensor.d46e6d
+        above: 75
+        id: "+ de 75"
+      - trigger: numeric_state
+        entity_id: sensor.d46e6d
+        below: 10
+        id: "- de 10"
+      - trigger: numeric_state
+        entity_id: sensor.d46e6d
+        below: 5
+        id: "- de 5"
+    actions:
+      - if:
+          - condition: trigger
+            id: "+ de 75"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.6a55b6
+          - action: "notify.mobile_app_zfold4"
+            data:
+              message: "Tablet descarregando"
+        else:
+          - if:
+              - or:
+                  - condition: trigger
+                    id: "- de 20"
+                  - condition: trigger
+                    id: "- de 10"
+            then:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.6a55b6
+              - action: "notify.mobile_app_zfold4"
+                data:
+                  message: "Tablet carregando"
+            else:
+              - if:
+                  - condition: trigger
+                    id: "- de 5"
+                then:
+                  - action: switch.turn_on
+                    target:
+                      entity_id: switch.6a55b6
+                  - action: "notify.mobile_app_zfold4"
+                    data:
+                      message: "Tablet carregando"
+                      title: "Tablet zerado de bateria"

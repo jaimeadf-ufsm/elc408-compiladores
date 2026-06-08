@@ -1,0 +1,68 @@
+  - alias: "Condicionais simples"
+    mode: "single"
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.bateria
+        below: 20
+        id: "baixa"
+      - trigger: numeric_state
+        entity_id: sensor.bateria
+        above: 80
+        id: "alta"
+    actions:
+      - if:
+          - condition: trigger
+            id: "baixa"
+        then:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.carregador
+        else:
+          - if:
+              - condition: trigger
+                id: "alta"
+            then:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.carregador
+            else:
+              - action: switch.toggle
+                target:
+                  entity_id: switch.carregador
+  - alias: "Condicionais aninhados"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.sala
+        to: "on"
+    actions:
+      - if:
+          - condition: time
+            after: "18:00:00"
+        then:
+          - if:
+              - condition: state
+                entity_id: light.sala
+                state: "off"
+            then:
+              - action: light.turn_on
+                target:
+                  entity_id: light.sala
+  - alias: "Bloco safe"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.porta
+        to: "on"
+    actions:
+      - sequence:
+          - action: tts.speak
+            target:
+              entity_id: tts.sala
+            data:
+              message: "Porta aberta"
+            continue_on_error: true
+          - action: light.turn_on
+            target:
+              entity_id: light.entrada
+            continue_on_error: true

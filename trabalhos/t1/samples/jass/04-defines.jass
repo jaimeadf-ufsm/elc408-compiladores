@@ -1,0 +1,33 @@
+// 'def' cria uma associação de tempo de compilação: cada uso é verificado por
+// tipo como se o valor estivesse escrito ali.
+
+// Definições globais (escopo de arquivo)
+def lampada   = light.sala            // entidade
+def amarelo   = rgb(255, 150, 60)   // cor
+def espera    = 5m                    // duração
+def limite    = 25                    // número
+
+automation "Definições globais" {
+    when (sensor.temperatura > limite)
+    do {
+        turn_on(lampada, color=amarelo, transition=2s)
+        delay(espera)
+        turn_off(lampada)
+    }
+}
+
+// Escopo de bloco e sombreamento.
+automation "Definições locais e sombreamento" {
+    when (binary_sensor.sala changes to "on" as "movimento")
+    do {
+        def brilho = 80                       // definição local a este bloco
+        turn_on(lampada, brightness_pct=brilho)
+
+        if (triggeredby "movimento") {
+            def amarelo = rgb(255, 150, 60) // sobrescreve o 'amarelo' global
+            turn_on(lampada, color=amarelo)   // usa o valor local
+        } else {
+            turn_on(lampada, color=amarelo)   // usa o valor global novamente
+        }
+    }
+}

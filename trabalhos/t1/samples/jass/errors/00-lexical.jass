@@ -1,0 +1,22 @@
+// Caractere que não inicia nenhum token ('$').
+automation "Caractere inválido" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(light.sala$led)
+    }
+}
+
+// String não terminada: falta a aspa de fechamento.
+automation "String não terminada" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        say(tts.sala, message="aviso)
+    }
+}
+
+// Literal de horário malformado: '@7:00:00' tem a hora com um só dígito
+//    (o token TIME exige @HH:MM:SS, com dois dígitos em cada campo).
+automation "Horario malformado" {
+    when (@7:00:00)
+    do { }
+}

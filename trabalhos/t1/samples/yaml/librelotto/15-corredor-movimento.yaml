@@ -1,0 +1,66 @@
+  - alias: "Corredor - Movimento"
+    mode: "restart"
+    triggers:
+      - trigger: state
+        entity_id: timer.corredor
+        to: "idle"
+        id: "Movimento_ocioso"
+      - trigger: state
+        entity_id: binary_sensor.motion_sensor_movimento
+        to: "on"
+        id: "Movimento1"
+      - trigger: state
+        entity_id: 
+          binary_sensor.corredor_suite_luminance_motion_sensor_movimento
+        to: "on"
+        id: "Movimento2"
+      - trigger: state
+        entity_id: binary_sensor.tz3000
+        to: "on"
+        id: "Movimento3"
+    conditions:
+      - condition: state
+        entity_id: alarm_control_panel.alarmo
+        state: "disarmed"
+    actions:
+      - if:
+          - or:
+              - condition: trigger
+                id: "Movimento1"
+              - condition: trigger
+                id: "Movimento2"
+              - condition: trigger
+                id: "Movimento3"
+        then:
+          - action: "timer.start"
+            target:
+              entity_id: timer.corredor
+          - if:
+              - condition: state
+                entity_id: switch.sonoff_10018dee48_3
+                state: "off"
+              - condition: state
+                entity_id: alarm_control_panel.alarmo
+                state: "disarmed"
+            then:
+              - if:
+                  - condition: time
+                    before: "23:00:00"
+                then:
+                  - action: switch.turn_on
+                    target:
+                      entity_id: switch.sonoff_10018dee48_1
+                else:
+                  - action: switch.turn_on
+                    target:
+                      entity_id: switch.sonoff_100203a579_1
+        else:
+          - if:
+              - condition: trigger
+                id: "Movimento_ocioso"
+            then:
+              - action: switch.turn_off
+                target:
+                  entity_id:
+                    - switch.sonoff_10018dee48_1
+                    - switch.sonoff_100203a579_1

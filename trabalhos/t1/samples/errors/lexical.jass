@@ -1,7 +1,0 @@
-// invalid character $
-automation "Erro Léxico 1 - Caractere Inválido" {
-    when (binary_sensor.porta changes to "on")
-    do {
-        turn_on(light.sala$led)
-    }
-}

@@ -1,0 +1,12 @@
+automation "Aviso Sonoro - Interruptor Ligado" {
+    description = "Avisa no Google Home quando o interruptor for ligado"
+    mode = "single"
+
+    when (light.sonoff changes to "on")
+
+    do {
+        say(tts.google_ai_tts, player=media_player.cozinha_4, message="oi oi oi oi oi", cache=True)
+        call("alexa_devices.send_sound", data={"sound": "amzn_sfx_doorbell_chime_01", "device_id": "3926ef"})
+        call("alexa_devices.send_text_command", data={"device_id": "38496a", "text_command": "desligar tela"})
+    }
+}

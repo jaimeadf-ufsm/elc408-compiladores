@@ -1,0 +1,59 @@
+  - alias: "Gatilhos de estado"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.sala
+        to: "on"
+      - trigger: state
+        entity_id: binary_sensor.cozinha
+        from: "off"
+        to: "on"
+      - trigger: state
+        entity_id: binary_sensor.quarto
+        to: "off"
+        for: "00:05:00"
+      - trigger: state
+        entity_id: light.varanda
+        from:
+          - "off"
+          - "unavailable"
+        to: "on"
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: light.sala
+  - alias: "Gatilhos numéricos"
+    mode: "single"
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.temperatura
+        above: 30
+      - trigger: numeric_state
+        entity_id: sensor.umidade
+        below: 40
+        for: "00:10:00"
+    actions:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.ventilador
+  - alias: "Gatilhos de horário e solares"
+    mode: "single"
+    triggers:
+      - trigger: time
+        at: "07:00:00"
+        id: "manha"
+      - trigger: sun
+        event: sunset
+        id: "por_do_sol"
+      - trigger: sun
+        event: sunrise
+        offset: "00:15:00"
+        id: "amanhecer"
+      - trigger: sun
+        event: sunset
+        offset: "-00:30:00"
+        id: "anoitecer"
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: light.jardim

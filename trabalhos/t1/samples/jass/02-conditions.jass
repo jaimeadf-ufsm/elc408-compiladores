@@ -1,0 +1,42 @@
+// A seção 'if' é opcional, prevenindo a execução da automação caso a condição
+// não seja satisfeita.
+
+// Condições de estado (== e !=) e numéricas (< e >).
+automation "Condições de estado e numéricas" {
+    when (binary_sensor.sala changes to "on")
+    if (
+        light.sala == "on" and          // igual a
+        climate.casa != "off" and       // diferente de
+        sensor.temperatura < 28         // comparação numérica
+    )
+    do {
+        turn_on(switch.umidificador)
+    }
+}
+
+// Condições de horário e de dia da semana.
+automation "Condições de horário e dia" {
+    when (@18:00:00)
+    if (
+        after @06:00:00 and                      // depois de um horário
+        before @23:00:00 and                     // antes de um horário
+        between @08:00:00 @22:00:00 and          // dentro de uma janela
+        on ["mon", "tue", "wed", "thu", "fri"]   // apenas em dias úteis
+    )
+    do {
+        turn_on(light.escritorio)
+    }
+}
+
+// Condições solares, operadores lógicos e 'triggeredby'.
+automation "Condições solares e operadores" {
+    when (binary_sensor.sala changes to "on" as "movimento")
+    if (
+        between sunset sunrise and       // entre o pôr e o nascer do sol
+        not (light.sala == "on") and     // negação com parênteses
+        triggeredby "movimento"          // qual gatilho disparou a automação
+    )
+    do {
+        turn_on(light.sala)
+    }
+}

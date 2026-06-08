@@ -1,0 +1,39 @@
+// Vários gatilhos são separados por 'or'. Cada um pode receber
+// um identificador com 'as "id"' (usado depois por 'triggeredby').
+
+// Gatilhos de estado: reagem à mudança de estado de uma entidade.
+automation "Gatilhos de estado" {
+    when (
+        binary_sensor.sala changes to "on" or                 // muda para "on"
+        binary_sensor.cozinha changes from "off" to "on" or   // de "off" para "on"
+        binary_sensor.quarto changes to "off" for 5m or       // fica "off" por 5 min
+        light.varanda changes from ["off", "unavailable"] to "on"  // origem em lista
+    )
+    do {
+        turn_on(light.sala)
+    }
+}
+
+// Gatilho numérico: reage ao cruzamento de um limiar (< ou >).
+automation "Gatilhos numéricos" {
+    when (
+        sensor.temperatura > 30 or        // acima de 30
+        sensor.umidade < 40 for 10m       // abaixo de 40 por 10 minutos
+    )
+    do {
+        turn_on(switch.ventilador)
+    }
+}
+
+// Gatilhos de horário e solares.
+automation "Gatilhos de horário e solares" {
+    when (
+        @07:00:00 as "manha" or           // horário fixo (HH:MM:SS)
+        sunset as "por_do_sol" or         // no pôr do sol
+        sunrise + 15m as "amanhecer" or   // 15 min após o nascer do sol
+        sunset - 30m as "anoitecer"       // 30 min antes do pôr do sol
+    )
+    do {
+        turn_on(light.jardim)
+    }
+}

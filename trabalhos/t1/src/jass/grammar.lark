@@ -1,26 +1,16 @@
-// jass grammar.
-//
-// Parsed with LALR(1) and a contextual lexer. The grammar recognizes shapes and
-// enforces only structural order (section order, no dangling `or`, positional
-// args before named ones); everything value/domain/type related is deferred to
-// the semantic analyzer. Keywords are explicit string terminals so they outrank
-// the NAME identifier pattern, and the value terminals (DURATION, NUMBER, ENTITY)
-// are written so longest-match keeps them unambiguous.
 
-// ===== rules =====
+start: (def_binding | automation)*
 
-start: top_item*
-?top_item: def_binding | automation
-
-// A compile-time alias binding: file-level (global) or block-level.
+// Alias definitions
 def_binding: DEF NAME ASSIGN value
 
-automation: AUTOMATION STRING? LBRACE metadata* when_block condition_block? do_block RBRACE
 
-// description=, mode=, max= — validated by the analyzer, not the grammar.
+// Automation definitions
+automation: AUTOMATION STRING? LBRACE metadata* when_block condition_block? do_block RBRACE
 metadata: NAME ASSIGN value
 
-// ----- triggers -----
+
+// Triggers
 when_block: WHEN LPAR trigger (OR trigger)* RPAR
 trigger: trigger_expr (AS STRING)?
 ?trigger_expr: state_trigger
@@ -32,7 +22,8 @@ numeric_trigger: entity (LT | GT) threshold (FOR DURATION)?
 time_trigger:    TIME
 sun_trigger:     sun_event
 
-// ----- conditions -----
+
+// Conditions
 condition_block: IF LPAR bool_expr RPAR
 
 ?bool_expr: or_expr
@@ -55,14 +46,13 @@ day_condition:         ON list
 sun_condition:         (AFTER | BEFORE) sun_event | BETWEEN sun_event sun_event
 triggeredby_condition: TRIGGEREDBY STRING
 
-// A numeric threshold: a literal number or an alias standing in for one.
 ?threshold: NUMBER -> number
           | NAME   -> alias_ref
 
-// sunrise/sunset with an optional signed offset (shared by triggers & conditions).
 sun_event: (SUNSET | SUNRISE) ((PLUS | MINUS) DURATION)?
 
-// ----- actions -----
+
+// Actions
 do_block: DO block
 block: LBRACE statement* RBRACE
 
@@ -72,7 +62,7 @@ block: LBRACE statement* RBRACE
           | def_binding
 
 action_call: NAME LPAR arguments? RPAR
-// Positional arguments must precede named ones (enforced structurally).
+
 arguments: pos_args
          | pos_args COMMA kw_args
          | kw_args
@@ -88,8 +78,8 @@ else_clause: ELSE block
 
 safe_block: SAFE block
 
-// ----- values -----
-// An entity position accepts a direct reference or an alias standing in for one.
+
+// Values
 entity: ENTITY -> entity_ref
       | NAME   -> alias_ref
 
@@ -110,11 +100,8 @@ dict:  LBRACE (pair (COMMA pair)*)? RBRACE
 pair:  STRING COLON value
 color: RGB LPAR NUMBER COMMA NUMBER COMMA NUMBER RPAR
 
-// ===== terminals =====
-//
-// Terminals are defined below (increment 1 — lexing).
 
-// ----- keywords -----
+// Keywords
 AUTOMATION:  "automation"
 WHEN:        "when"
 DO:          "do"
@@ -142,7 +129,7 @@ TRUE:        "True"
 FALSE:       "False"
 RGB:         "rgb"
 
-// ----- operators & punctuation -----
+// Operators and punctuation
 EQ:       "=="
 NE:       "!="
 ASSIGN:   "="
@@ -159,22 +146,17 @@ RBRACKET: "]"
 COMMA:    ","
 COLON:    ":"
 
-// ----- values -----
-// A time literal: @HH:MM:SS (one token so ':' stays free for dicts).
+
+// Values
 TIME:     /@\d{2}:\d{2}:\d{2}/
-// A duration: any of h/m/s units in order, at least one present (e.g. 1h30m, 45s).
 DURATION: /\d+h(\d+m)?(\d+s)?|\d+m(\d+s)?|\d+s/
-// An (unsigned) integer or float; floats handled first for longest-match.
 NUMBER:   /\d+\.\d+|\d+/
-// An entity reference: lowercase domain, then '.', then the object id (may start
-// with a digit, e.g. alarm_control_panel.37dc24).
 ENTITY:   /[a-z][a-z_]*\.[a-z0-9_]+/
-// An identifier: action names, parameter names and alias names.
 NAME:     /[a-zA-Z_][a-zA-Z0-9_]*/
-// A double-quoted string (supports backslash escapes).
 STRING:   /"(\\.|[^"\\])*"/
 
-// ----- ignored -----
+
+// Comments
 COMMENT: /\/\/[^\n]*/
 %ignore COMMENT
 %ignore /[ \t\f\r\n]+/

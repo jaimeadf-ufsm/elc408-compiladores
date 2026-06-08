@@ -19,8 +19,8 @@ automation "Metadados" {
 
     when (binary_sensor.porta changes to "on")
     do {
-        turn_on(light.sala)
-        delay(5m)                     // espera 5 minutos
+        turn_on(light.sala, color=rgb(255, 150, 60)) // liga com cor
+        delay(5m)                       // espera 5 minutos
         turn_off(light.sala)
     }
 }

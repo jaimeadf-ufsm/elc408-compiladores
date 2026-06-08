@@ -1,10 +1,3 @@
-"""Typed AST for jass.
-
-Every node carries an optional source :class:`Location` (keyword-only, so it
-never interferes with positional fields) for diagnostics. The tree splits into
-values (expressions), triggers, boolean-condition expressions, and statements.
-"""
-
 from __future__ import annotations
 
 import dataclasses
@@ -19,12 +12,9 @@ class Node:
     location: Location | None = field(default=None, kw_only=True)
 
 
-# ----- values -----
-
-
 @dataclass
 class Value(Node):
-    """Base for expression/value nodes."""
+    pass
 
 
 @dataclass
@@ -59,15 +49,11 @@ class ColorLit(Value):
 
 @dataclass
 class EntityLit(Value):
-    """A direct entity reference, e.g. ``light.living_room``."""
-
     value: EntityRef
 
 
 @dataclass
 class AliasRef(Value):
-    """A reference to a ``def`` alias, resolved during analysis."""
-
     name: str
 
 
@@ -81,12 +67,10 @@ class DictLit(Value):
     pairs: list[tuple[str, Value]]
 
 
-# An entity position accepts a direct reference or an alias standing in for one.
 EntityExpr = EntityLit | AliasRef
 
 
-# ----- triggers -----
-
+# Triggers
 
 @dataclass
 class Trigger(Node):
@@ -116,8 +100,6 @@ class TimeTrigger(Trigger):
 
 @dataclass
 class SunPoint(Node):
-    """A sun event with an optional signed offset, e.g. ``sunset - 30m``."""
-
     event: str  # "sunset" or "sunrise"
     offset: Duration | None = None
     offset_sign: str | None = None  # "+" or "-"
@@ -128,12 +110,11 @@ class SunTrigger(Trigger):
     point: SunPoint
 
 
-# ----- conditions (boolean expressions) -----
-
+# Conditions
 
 @dataclass
 class BoolExpr(Node):
-    """Base for condition expressions."""
+    pass
 
 
 @dataclass
@@ -167,8 +148,6 @@ class NumericCondition(BoolExpr):
 
 @dataclass
 class TimeCondition(BoolExpr):
-    """A time window: ``after``, ``before``, or both (``between A B``)."""
-
     after: TimeOfDay | None = None
     before: TimeOfDay | None = None
 
@@ -180,8 +159,6 @@ class DayCondition(BoolExpr):
 
 @dataclass
 class SunCondition(BoolExpr):
-    """A sun window: ``after``, ``before``, or both (``between A B``)."""
-
     after: SunPoint | None = None
     before: SunPoint | None = None
 
@@ -191,12 +168,11 @@ class TriggeredBy(BoolExpr):
     id: str
 
 
-# ----- statements -----
-
+# Statements
 
 @dataclass
 class Statement(Node):
-    """Base for statements in a do/if/safe block."""
+    pass
 
 
 @dataclass
@@ -214,8 +190,6 @@ class ActionCall(Statement):
 
 @dataclass
 class ConditionalBranch(Node):
-    """An ``if``/``elif`` arm: a condition and the body it guards."""
-
     condition: BoolExpr
     body: list[Statement]
 
@@ -233,14 +207,11 @@ class SafeBlock(Statement):
 
 @dataclass
 class DefBinding(Statement):
-    """A ``def NAME = value`` alias binding (file-level or block-level)."""
-
     name: str
     value: Value
 
 
-# ----- top level -----
-
+# Top-level items
 
 @dataclass
 class Metadata(Node):
@@ -263,21 +234,28 @@ class Program(Node):
 
 
 def dump(value, indent: int = 0) -> str:
-    """Render an AST node (or any of its field values) as indented text."""
     pad = "  " * (indent + 1)
+    
     if isinstance(value, Node):
         fields = [f for f in dataclasses.fields(value) if f.name != "location"]
         rendered = [type(value).__name__]
+        
         for f in fields:
             child = getattr(value, f.name)
             rendered.append(f"{pad}{f.name}: {dump(child, indent + 1)}")
+        
         return "\n".join(rendered)
+    
     if isinstance(value, list):
         if not value:
             return "[]"
+        
         return "\n" + "\n".join(f"{pad}- {dump(item, indent + 1)}" for item in value)
+    
     if isinstance(value, tuple):
         return "(" + ", ".join(dump(item, indent) for item in value) + ")"
+    
     if isinstance(value, str):
         return repr(value)
+    
     return str(value)

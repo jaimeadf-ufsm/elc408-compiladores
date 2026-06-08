@@ -1,10 +1,3 @@
-"""Command-line entry point for the jass compiler.
-
-The CLI is the inspection surface for the compiler: as each stage lands it is
-exposed behind ``--emit`` so the intermediate representations can be reviewed.
-The default emit is the furthest stage currently implemented.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -21,8 +14,6 @@ EXIT_OK = 0
 EXIT_USAGE = 64
 EXIT_COMPILE = 65
 
-# Compilation stages, in pipeline order. Choices grow as each stage is
-# implemented; the default emit is the furthest stage currently available.
 EMIT_STAGES = ["tokens", "parse", "ast", "check", "yaml"]
 DEFAULT_EMIT = EMIT_STAGES[-1]
 
@@ -53,44 +44,57 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="OUT",
         help="write result to a file instead of stdout",
     )
+    
     return parser
 
 
 def compile_source(source: str, emit: str) -> tuple[str | None, list[JassError]]:
-    """Run the pipeline up to ``emit``.
-
-    Returns the textual representation of the requested stage (or ``None`` if it
-    could not be produced) together with the list of collected diagnostics.
-    """
     try:
         if emit == "tokens":
             lines = [f"{token.type:<11} {str(token)!r}" for token in tokenize(source)]
+        
             return "\n".join(lines), []
+        
         if emit == "parse":
             tree, errors = parse(source)
+        
             return (tree.pretty().rstrip() if tree is not None else None), list(errors)
+        
         if emit == "ast":
             tree, errors = parse(source)
+        
             if tree is None:
                 return None, list(errors)
+        
             return ast.dump(build_ast(tree)), list(errors)
+        
         if emit == "check":
             tree, errors = parse(source)
+        
             if tree is None:
                 return None, list(errors)
+        
             semantic_errors = analyze(build_ast(tree))
+        
             return ("ok" if not semantic_errors else None), list(semantic_errors)
+        
         if emit == "yaml":
             tree, errors = parse(source)
+        
             if tree is None:
                 return None, list(errors)
+        
             program = build_ast(tree)
             semantic_errors = analyze(program)
+        
             if semantic_errors:
                 return None, list(semantic_errors)
+            
             return codegen.dump(program), []
+    
     except JassError as error:
         return None, [error]
+    
     raise ValueError(f"unknown emit stage: {emit}")
 
 
@@ -99,6 +103,7 @@ def main(argv: list[str] | None = None) -> int:
 
     outputs: list[str] = []
     had_error = False
+    
     for path in args.files:
         try:
             source = path.read_text(encoding="utf-8")
@@ -107,10 +112,13 @@ def main(argv: list[str] | None = None) -> int:
             return EXIT_USAGE
 
         output, errors = compile_source(source, args.emit)
+        
         for error in errors:
             print(format_diagnostic(error, source, str(path)), file=sys.stderr)
+        
         if errors:
             had_error = True
+        
         if output is not None:
             outputs.append(output)
 
@@ -118,6 +126,7 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_COMPILE
 
     result = "\n".join(outputs)
+    
     if args.output is not None:
         args.output.write_text(result, encoding="utf-8")
     else:

@@ -22,8 +22,3 @@ packages = ["src/jass"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "src/jass/grammar.lark" = "jass/grammar.lark"
-
-[dependency-groups]
-dev = [
-    "pytest>=9.0.3",
-]

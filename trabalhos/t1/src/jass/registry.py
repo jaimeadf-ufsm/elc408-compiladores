@@ -14,7 +14,7 @@ from argument validation.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 # Value kinds used as parameter types (matched against inferred argument types).
 # 'entity' for the primary param additionally permits a list of entities.
@@ -55,6 +55,7 @@ _DOMAIN_ACTIONS: dict[tuple[str, str], ActionDef] = {}
 
 
 def _register(action: ActionDef) -> None:
+    assert action.domain is not None
     _DOMAIN_ACTIONS[(action.name, action.domain)] = action
 
 
@@ -63,11 +64,13 @@ _register(ActionDef("turn_on", "light", "light.turn_on", [
     _entity(),
     Param("color", "color", "rgb_color"),
     Param("brightness", "number", "brightness"),
+    Param("brightness_pct", "number", "brightness_pct"),
     Param("transition", "duration", "transition"),
 ]))
 _register(ActionDef("turn_on", "switch", "switch.turn_on", [_entity()]))
 _register(ActionDef("turn_off", "light", "light.turn_off", [_entity()]))
 _register(ActionDef("turn_off", "switch", "switch.turn_off", [_entity()]))
+_register(ActionDef("turn_off", "media_player", "media_player.turn_off", [_entity()]))
 _register(ActionDef("toggle", "light", "light.toggle", [_entity()]))
 _register(ActionDef("toggle", "switch", "switch.toggle", [_entity()]))
 
@@ -81,13 +84,17 @@ _register(ActionDef("volume", "media_player", "media_player.volume_set", [
     Param("level", "number", "volume_level", required=True),
 ]))
 
+# Timers.
+_register(ActionDef("start", "timer", "timer.start", [_entity()]))
+
 # Text-to-speech: the primary is the tts engine; an optional media player target
-# and the message/language ride in data.
+# and the message/language/cache ride in data.
 _register(ActionDef("say", "tts", "tts.speak", [
-    _entity("engine"),
-    Param("target", "entity", "media_player_entity_id"),
+    _entity(),
+    Param("player", "entity", "media_player_entity_id"),
     Param("message", "string", "message", required=True),
     Param("language", "string", "language"),
+    Param("cache", "bool", "cache"),
 ]))
 
 # Trigger another automation.

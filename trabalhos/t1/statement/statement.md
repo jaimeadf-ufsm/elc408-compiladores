@@ -1,14 +1,8 @@
-
-
 # **Trabalho Final: Compiladores (2026)**
-
-## 
 
 ## **1\. Construir uma Linguagem e um Tradutor para automações no Home Assistant**
 
 Os alunos deverão projetar e implementar um compilador (tradutor) para a sua linguagem. A linguagem deve abstrair a complexidade das automações procedurais, transformando scripts lógicos em arquivos de configuração **YAML** compatíveis com o padrão do **Home Assistant**.
-
-**Prazo de Entrega:** até dia 06/06/2026 (via Classroom \- link GitHub)
 
 **Apresentação Presencial:** De acordo com o cronograma da disciplina (presencial e explanativa). Serão 7 apresentações por dia letivo, de acordo com a ordem de entrega .
 

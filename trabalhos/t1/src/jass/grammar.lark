@@ -50,9 +50,9 @@ condition_block: IF LPAR bool_expr RPAR
           | triggeredby_condition
 state_condition:       entity (EQ | NE) value
 numeric_condition:     entity (LT | GT) threshold
-time_condition:        (AFTER | BEFORE) TIME
+time_condition:        (AFTER | BEFORE) TIME | BETWEEN TIME TIME
 day_condition:         ON list
-sun_condition:         (AFTER | BEFORE) sun_event
+sun_condition:         (AFTER | BEFORE) sun_event | BETWEEN sun_event sun_event
 triggeredby_condition: TRIGGEREDBY STRING
 
 // A numeric threshold: a literal number or an alias standing in for one.
@@ -133,6 +133,7 @@ AND:         "and"
 NOT:         "not"
 AFTER:       "after"
 BEFORE:      "before"
+BETWEEN:     "between"
 ON:          "on"
 SUNSET:      "sunset"
 SUNRISE:     "sunrise"

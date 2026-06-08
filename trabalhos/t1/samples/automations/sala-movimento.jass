@@ -21,7 +21,7 @@ automation "Sala - Movimento" {
                 alarm_control_panel.37dc24 == "disarmed" and
                 switch.luzes_da_sala == "off" and
                 media_player.eea259 == "off" and
-                after sunset and before sunrise
+                between sunset sunrise
             ) {
                 turn_on(switch.sonoff_10021a5971_2)
                 delay(3m)

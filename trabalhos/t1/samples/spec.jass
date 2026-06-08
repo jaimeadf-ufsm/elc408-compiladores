@@ -61,15 +61,17 @@ automation "Climate Comfort" {
         // time conditions:
         // - after TIME
         // - before TIME
+        // - between TIME TIME
         // - on [DAY, ...]
         after @06:00:00 and
         before @23:00:00 and
         on ["mon", "tue", "wed", "thu", "fri"] and
 
         // sun conditions:
-        // - after/before sunrise/sunset with optional offset
+        // - after/before/between sunrise/sunset with optional offset
         before sunset + 10m and
         after sunrise and
+        between sunrise + 10m sunset and
 
         // support for logical operators, like Python
         not (sensor.outside_temperature > 28 or weather.forecast_home == "sunny" or triggeredby "no_motion")

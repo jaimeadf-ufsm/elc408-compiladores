@@ -15,7 +15,7 @@ automation "Corda Corredor - Movimento" {
 
     do {
         turn_on(light.a4595b)
-        if (after @01:15:00 and before @12:00:00) {
+        if (between @01:15:00 @12:00:00) {
             delay(45s)
         } else {
             delay(1m45s)

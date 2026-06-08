@@ -91,9 +91,9 @@ class CodeGen:
             result["at"] = _q(trigger.time.as_hms())
         elif isinstance(trigger, ast.SunTrigger):
             result["trigger"] = "sun"
-            result["event"] = trigger.event
-            if trigger.offset is not None:
-                result["offset"] = _q(self.signed_offset(trigger.offset_sign, trigger.offset))
+            result["event"] = trigger.point.event
+            if trigger.point.offset is not None:
+                result["offset"] = _q(self.signed_offset(trigger.point))
         if trigger.id is not None:
             result["id"] = _q(trigger.id)
         return result
@@ -120,13 +120,21 @@ class CodeGen:
             key = "above" if expr.op == ">" else "below"
             return {"condition": "numeric_state", "entity_id": self.entity_id(expr.entity), key: self.lower(expr.threshold)}
         if isinstance(expr, ast.TimeCondition):
-            return {"condition": "time", expr.op: _q(expr.time.as_hms())}
+            result = {"condition": "time"}
+            if expr.after is not None:
+                result["after"] = _q(expr.after.as_hms())
+            if expr.before is not None:
+                result["before"] = _q(expr.before.as_hms())
+            return result
         if isinstance(expr, ast.DayCondition):
             return {"condition": "time", "weekday": [_q(day) for day in expr.days]}
         if isinstance(expr, ast.SunCondition):
-            result = {"condition": "sun", expr.op: expr.event}
-            if expr.offset is not None:
-                result[f"{expr.op}_offset"] = _q(self.signed_offset(expr.offset_sign, expr.offset))
+            result = {"condition": "sun"}
+            for key, point in (("after", expr.after), ("before", expr.before)):
+                if point is not None:
+                    result[key] = point.event
+                    if point.offset is not None:
+                        result[f"{key}_offset"] = _q(self.signed_offset(point))
             return result
         if isinstance(expr, ast.TriggeredBy):
             return {"condition": "trigger", "id": _q(expr.id)}
@@ -257,9 +265,9 @@ class CodeGen:
             primary = self.resolve(primary.items[0])
         return primary.value.domain
 
-    def signed_offset(self, sign: str | None, duration) -> str:
-        prefix = "-" if sign == "-" else ""
-        return f"{prefix}{duration.as_hms()}"
+    def signed_offset(self, point: ast.SunPoint) -> str:
+        prefix = "-" if point.offset_sign == "-" else ""
+        return f"{prefix}{point.offset.as_hms()}"
 
 
 def generate(program: ast.Program) -> list[dict]:

@@ -8,8 +8,7 @@ automation "Suite - Ligar Toalheiro" {
     )
 
     if (
-        after @15:00:00 and
-        before @23:59:00 and
+        between @15:00:00 @23:59:00 and
         on ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
     )
 

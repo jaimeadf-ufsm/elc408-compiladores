@@ -115,10 +115,17 @@ class TimeTrigger(Trigger):
 
 
 @dataclass
-class SunTrigger(Trigger):
+class SunPoint(Node):
+    """A sun event with an optional signed offset, e.g. ``sunset - 30m``."""
+
     event: str  # "sunset" or "sunrise"
     offset: Duration | None = None
     offset_sign: str | None = None  # "+" or "-"
+
+
+@dataclass
+class SunTrigger(Trigger):
+    point: SunPoint
 
 
 # ----- conditions (boolean expressions) -----
@@ -160,8 +167,10 @@ class NumericCondition(BoolExpr):
 
 @dataclass
 class TimeCondition(BoolExpr):
-    op: str  # "after" or "before"
-    time: TimeOfDay
+    """A time window: ``after``, ``before``, or both (``between A B``)."""
+
+    after: TimeOfDay | None = None
+    before: TimeOfDay | None = None
 
 
 @dataclass
@@ -171,10 +180,10 @@ class DayCondition(BoolExpr):
 
 @dataclass
 class SunCondition(BoolExpr):
-    op: str  # "after" or "before"
-    event: str  # "sunset" or "sunrise"
-    offset: Duration | None = None
-    offset_sign: str | None = None
+    """A sun window: ``after``, ``before``, or both (``between A B``)."""
+
+    after: SunPoint | None = None
+    before: SunPoint | None = None
 
 
 @dataclass

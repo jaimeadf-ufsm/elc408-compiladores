@@ -156,15 +156,14 @@ class AstBuilder(Transformer):
         return ast.TimeTrigger(TimeOfDay.parse(str(children[0])), location=_loc(meta))
 
     def sun_trigger(self, meta, children):
-        event, sign, offset = children[0]
-        return ast.SunTrigger(event, offset, sign, location=_loc(meta))
+        return ast.SunTrigger(children[0], location=_loc(meta))
 
     def sun_event(self, meta, children):
         event = _op(children, "SUNSET", "SUNRISE")
         sign = _op(children, "PLUS", "MINUS") if _token(children, "PLUS") or _token(children, "MINUS") else None
         offset_token = _token(children, "DURATION")
         offset = Duration.parse(str(offset_token)) if offset_token else None
-        return (event, sign, offset)
+        return ast.SunPoint(event, offset, sign, location=_loc(meta))
 
     # ----- conditions -----
 
@@ -198,9 +197,9 @@ class AstBuilder(Transformer):
         return ast.NumericCondition(entity, op, threshold, location=_loc(meta))
 
     def time_condition(self, meta, children):
-        op = _op(children, "AFTER", "BEFORE")
-        time = TimeOfDay.parse(str(_token(children, "TIME")))
-        return ast.TimeCondition(op, time, location=_loc(meta))
+        times = [TimeOfDay.parse(str(c)) for c in children if isinstance(c, Token) and c.type == "TIME"]
+        after, before = self._window(children, times)
+        return ast.TimeCondition(after, before, location=_loc(meta))
 
     def day_condition(self, meta, children):
         days_list = next(c for c in children if isinstance(c, ast.ListLit))
@@ -208,9 +207,18 @@ class AstBuilder(Transformer):
         return ast.DayCondition(days, location=_loc(meta))
 
     def sun_condition(self, meta, children):
-        op = _op(children, "AFTER", "BEFORE")
-        event, sign, offset = next(c for c in children if isinstance(c, tuple))
-        return ast.SunCondition(op, event, offset, sign, location=_loc(meta))
+        points = [c for c in children if isinstance(c, ast.SunPoint)]
+        after, before = self._window(children, points)
+        return ast.SunCondition(after, before, location=_loc(meta))
+
+    @staticmethod
+    def _window(children, bounds):
+        """Split bounds into (after, before) by the after/before/between keyword."""
+        if _token(children, "BETWEEN"):
+            return bounds[0], bounds[1]
+        if _token(children, "AFTER"):
+            return bounds[0], None
+        return None, bounds[0]
 
     def triggeredby_condition(self, meta, children):
         return ast.TriggeredBy(_unquote(_token(children, "STRING")), location=_loc(meta))

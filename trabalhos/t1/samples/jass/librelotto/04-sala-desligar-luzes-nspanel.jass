@@ -1,0 +1,30 @@
+automation "Sala - Desligar Luzes NSPanel" {
+    id = "1723433058894"
+    mode = "single"
+
+    when (switch.b2b332 changes to "on")
+
+    if (between sunset sunrise)
+
+    do {
+        turn_off([
+            switch.luzes_da_cozinha,
+            switch.luzes_da_sala,
+            switch.luzes_do_lavabo,
+            switch.cozinha_nichos_led_interruptor_1,
+            switch.499d4e,
+            switch.5f9afd,
+            switch.b36768
+        ])
+        call("alexa_devices.send_text_command", data={"device_id": "38496a", "text_command": "desligar tela"})
+        turn_off([
+            media_player.music_frame,
+            media_player.music_frame_2,
+            media_player.nestmini0550,
+            media_player.home_theater_2,
+            media_player.tx_nr5100
+        ])
+        call("alexa_devices.send_text_command", data={"device_id": "38496a", "text_command": "desligar tela"})
+        call("alexa_devices.send_text_command", data={"device_id": "43ae6c", "text_command": "desligar tela"})
+    }
+}

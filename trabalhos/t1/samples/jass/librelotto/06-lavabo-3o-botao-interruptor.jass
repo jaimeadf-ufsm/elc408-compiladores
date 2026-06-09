@@ -1,0 +1,26 @@
+automation "Lavabo - 3o Botão Interruptor" {
+    id = "1724530319511"
+    mode = "restart"
+
+    when (
+        switch.8aa7f9 changes to "on" as "Liga" or
+        switch.8aa7f9 changes to "off" as "Desliga"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Liga") {
+            turn_on([switch.espelho_do_lavabo, switch.sonoff_100200129d_2])
+        }
+        if (triggeredby "Desliga") {
+            turn_off([
+                switch.sonoff_100200129d_1,
+                switch.sonoff_100200129d_2,
+                switch.sonoff_100200129d_3,
+                switch.espelho_do_lavabo
+            ])
+            call("notify.mobile_app_zfold4", data={"message": "Lavabo"})
+        }
+    }
+}

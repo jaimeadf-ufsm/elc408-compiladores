@@ -1,4 +1,5 @@
 automation "Corda Corredor - Movimento" {
+    id = "1722215033727"
     mode = "restart"
 
     when (

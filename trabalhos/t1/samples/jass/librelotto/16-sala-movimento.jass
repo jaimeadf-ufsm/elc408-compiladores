@@ -1,4 +1,5 @@
 automation "Sala - Movimento" {
+    id = "1752975140953"
     mode = "restart"
 
     when (

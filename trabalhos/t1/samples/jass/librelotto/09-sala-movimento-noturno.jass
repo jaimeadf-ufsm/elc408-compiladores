@@ -1,0 +1,24 @@
+automation "Sala - Movimento Noturno" {
+    id = "1726450612443"
+    mode = "single"
+
+    when (
+        binary_sensor.9b6b66 changes to "on" or
+        binary_sensor.5e8d44 changes to "on"
+    )
+
+    if (
+        switch.luzes_da_cozinha == "off" and
+        switch.luzes_da_sala == "off" and
+        between @01:00:00 @06:30:00 and
+        media_player.eea259 == "off" and
+        switch.bb97c4 == "on"
+    )
+
+    do {
+        turn_on(switch.ilha_interruptor_1)
+        call("notify.mobile_app_zfold4", data={"message": "Movimento noturno na sala"})
+        delay(4m)
+        turn_off([switch.ilha_interruptor_1, switch.sonoff_1001887e06_2])
+    }
+}

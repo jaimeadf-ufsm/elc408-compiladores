@@ -1,0 +1,19 @@
+automation "Suíte - Escova Oral-B" {
+    id = "1777217946260"
+    mode = "single"
+
+    when (
+        sensor.triumph_v2_90f2 changes to "charging" as "charging" or
+        sensor.triumph_v2_90f2 changes to "idle" as "idle" or
+        sensor.triumph_v2_90f2 changes to "running" as "running"
+    )
+
+    do {
+        if (triggeredby "idle") {
+            turn_off(light.1f44a7)
+        } elif (triggeredby "running") {
+            turn_on(light.1f44a7, brightness_pct=20)
+        } elif (triggeredby "charging") {
+        }
+    }
+}

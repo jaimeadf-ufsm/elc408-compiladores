@@ -1,4 +1,5 @@
 automation "Aviso Sonoro - Interruptor Ligado" {
+    id = "1763848417558"
     description = "Avisa no Google Home quando o interruptor for ligado"
     mode = "single"
 

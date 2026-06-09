@@ -1,0 +1,32 @@
+  - id: "1765403263723"
+    alias: "Cozinha - Desligar Luzes"
+    mode: "single"
+    triggers: []
+    actions:
+      - action: light.turn_off
+        target:
+          entity_id: light.d51d48
+      - action: light.turn_off
+        target:
+          entity_id: light.07ee90
+      - action: switch.turn_off
+        target:
+          entity_id: switch.976f52
+      - action: light.turn_off
+        target:
+          entity_id: light.f3e434
+      - action: light.toggle
+        target:
+          entity_id: light.e042f1
+      - action: switch.turn_off
+        target:
+          entity_id: switch.be6309
+      - action: light.turn_off
+        target:
+          entity_id: light.f3bc1c
+      - action: switch.turn_off
+        target:
+          entity_id: switch.c6be08
+      - action: switch.turn_off
+        target:
+          entity_id: switch.2a3fe0

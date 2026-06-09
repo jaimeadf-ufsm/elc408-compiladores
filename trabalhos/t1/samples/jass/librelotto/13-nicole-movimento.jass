@@ -1,4 +1,5 @@
 automation "Nicole - Movimento" {
+    id = "1752867667206"
     mode = "restart"
 
     when (

@@ -1,4 +1,5 @@
 automation "Tablet - Carregador" {
+    id = "1722827110327"
     mode = "single"
 
     when (

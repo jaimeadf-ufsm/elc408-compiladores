@@ -1,4 +1,4 @@
-  - id: "1780950851"
+  - id: "1780966939"
     alias: "Definições globais"
     mode: "single"
     triggers:
@@ -19,7 +19,7 @@
       - action: light.turn_off
         target:
           entity_id: light.sala
-  - id: "1780950851"
+  - id: "1780966939"
     alias: "Definições locais e sombreamento"
     mode: "single"
     triggers:

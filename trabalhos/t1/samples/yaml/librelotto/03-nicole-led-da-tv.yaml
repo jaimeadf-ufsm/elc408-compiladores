@@ -1,0 +1,31 @@
+  - id: "1723000656841"
+    alias: "Nicole - LED da TV"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: switch.e26d13
+        to: "off"
+        id: "Desativado"
+      - trigger: state
+        entity_id: switch.e26d13
+        to: "on"
+        id: "Ativado"
+    conditions:
+      - condition: state
+        entity_id: alarm_control_panel.alarmo
+        state: "disarmed"
+    actions:
+      - if:
+          - condition: trigger
+            id: "Desativado"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.d8598c
+      - if:
+          - condition: trigger
+            id: "Ativado"
+        then:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.d8598c

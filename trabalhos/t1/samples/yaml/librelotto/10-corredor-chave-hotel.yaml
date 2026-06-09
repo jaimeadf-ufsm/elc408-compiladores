@@ -1,0 +1,49 @@
+  - id: "1741568290357"
+    alias: "Corredor - Chave Hotel"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: switch.73bd5c
+        to: "on"
+        id: "Tuya on"
+      - trigger: state
+        entity_id: switch.73bd5c
+        to: "off"
+        id: "Tuya off"
+      - trigger: state
+        entity_id: switch.dac219
+        to: "on"
+        id: "Sonoff on"
+      - trigger: state
+        entity_id: switch.dac219
+        to: "off"
+        id: "Sonoff off"
+    actions:
+      - if:
+          - condition: trigger
+            id: "Tuya off"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.dac219
+      - if:
+          - condition: trigger
+            id: "Tuya on"
+        then:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.dac219
+      - if:
+          - condition: trigger
+            id: "Sonoff off"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.73bd5c
+      - if:
+          - condition: trigger
+            id: "Sonoff on"
+        then:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.73bd5c

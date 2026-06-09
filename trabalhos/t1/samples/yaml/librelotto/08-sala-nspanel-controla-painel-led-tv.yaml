@@ -1,0 +1,31 @@
+  - id: "1725804544440"
+    alias: "Sala - NSPanel Controla Painel LED TV"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: switch.2a3fe0
+        to: "on"
+        id: "Ligado"
+      - trigger: state
+        entity_id: switch.2a3fe0
+        to: "off"
+        id: "Desligado"
+    conditions:
+      - condition: state
+        entity_id: alarm_control_panel.alarmo
+        state: "disarmed"
+    actions:
+      - if:
+          - condition: trigger
+            id: "Ligado"
+        then:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.sonoff_1001e0dd5a_1
+      - if:
+          - condition: trigger
+            id: "Desligado"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.sonoff_1001e0dd5a_1

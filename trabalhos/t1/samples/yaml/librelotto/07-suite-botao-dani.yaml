@@ -1,0 +1,63 @@
+  - id: "1725417576683"
+    alias: "Suite - Botão Dani"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: sensor.sonoff_a440016554
+        to: "single"
+        id: "Single"
+      - trigger: state
+        entity_id: sensor.sonoff_a440016554
+        to: "double"
+        id: "Double"
+      - trigger: state
+        entity_id: sensor.sonoff_a440016554
+        to: "hold"
+        id: "Hold"
+    actions:
+      - if:
+          - condition: trigger
+            id: "Single"
+          - condition: state
+            entity_id: switch.luzes_da_suite
+            state: "off"
+        then:
+          - action: light.turn_on
+            target:
+              entity_id: light.arandela_suite
+      - if:
+          - condition: trigger
+            id: "Single"
+          - condition: state
+            entity_id: switch.luzes_da_suite
+            state: "on"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id:
+                - switch.luzes_da_nicole
+                - switch.luzes_do_eric
+                - switch.sonoff_10018dee48_1
+                - switch.luzes_da_suite
+                - switch.df57e4
+          - action: switch.turn_on
+            target:
+              entity_id: switch.bb97c4
+          - action: timer.finish
+            target:
+              entity_id:
+                - timer.quarto_eric
+                - timer.corredor
+                - timer.quarto_nicole
+                - timer.closet
+                - timer.banho_nicole
+          - action: light.turn_off
+            target:
+              entity_id: light.fita_led_rgb_5m
+      - if:
+          - condition: trigger
+            id: "Double"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.luzes_da_suite

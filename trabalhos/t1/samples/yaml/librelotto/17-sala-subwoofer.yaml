@@ -1,0 +1,44 @@
+  - id: "1758495004445"
+    alias: "Sala - Subwoofer"
+    mode: "single"
+    triggers:
+      - trigger: state
+        entity_id: media_player.tx_nr5100
+        to: "off"
+        id: "Sub desligou"
+      - trigger: state
+        entity_id: media_player.onkyo_tx_nr5100_f563ca_2
+        to: "off"
+        id: "Sub desligou"
+      - trigger: state
+        entity_id: media_player.tx_nr5100
+        to:
+          - "on"
+          - "standby"
+          - "playing"
+        id: "Sub ligou"
+      - trigger: state
+        entity_id: media_player.onkyo_tx_nr5100_f563ca_2
+        to:
+          - "on"
+          - "standby"
+          - "playing"
+        id: "Sub ligou"
+      - trigger: time
+        at: "23:00:00"
+        id: "Hora"
+    actions:
+      - if:
+          - or:
+              - condition: trigger
+                id: "Sub desligou"
+              - condition: trigger
+                id: "Hora"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.28acb0
+        else:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.28acb0

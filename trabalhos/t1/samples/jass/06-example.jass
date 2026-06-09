@@ -1,0 +1,8 @@
+automation "Luz da varanda" {
+    when (binary_sensor.porta changes to "on")
+    do {
+        turn_on(light.varanda, brightness=180)
+        delay(5m)
+        turn_off(light.varanda)
+    }
+}

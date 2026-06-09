@@ -1,0 +1,10 @@
+automation "Sala - Desligar LED Sanca" {
+    id = "1763259487234"
+    mode = "single"
+
+    when (@05:00:00)
+
+    do {
+        turn_off(light.973148)
+    }
+}

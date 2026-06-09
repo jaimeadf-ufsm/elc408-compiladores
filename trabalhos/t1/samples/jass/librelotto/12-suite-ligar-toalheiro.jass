@@ -1,4 +1,5 @@
 automation "Suite - Ligar Toalheiro" {
+    id = "1749856006086"
     mode = "single"
 
     when (
@@ -14,7 +15,7 @@ automation "Suite - Ligar Toalheiro" {
 
     do {
         turn_on(switch.5e57f3)
-        delay(1h35m)
+        delay(35m)
         turn_off(switch.5e57f3)
     }
 }

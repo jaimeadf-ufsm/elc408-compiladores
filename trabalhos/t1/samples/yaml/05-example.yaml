@@ -1,4 +1,4 @@
-  - id: "1780950852"
+  - id: "1780966939"
     alias: "Luz Sala"
     description: "Ligar a luz quando ha movimento ou ao anoitecer"
     mode: "restart"

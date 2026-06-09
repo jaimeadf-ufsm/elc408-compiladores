@@ -1,0 +1,26 @@
+automation "Corredor - Chave Hotel" {
+    id = "1741568290357"
+    mode = "single"
+
+    when (
+        switch.73bd5c changes to "on" as "Tuya on" or
+        switch.73bd5c changes to "off" as "Tuya off" or
+        switch.dac219 changes to "on" as "Sonoff on" or
+        switch.dac219 changes to "off" as "Sonoff off"
+    )
+
+    do {
+        if (triggeredby "Tuya off") {
+            turn_off(switch.dac219)
+        }
+        if (triggeredby "Tuya on") {
+            turn_on(switch.dac219)
+        }
+        if (triggeredby "Sonoff off") {
+            turn_off(switch.73bd5c)
+        }
+        if (triggeredby "Sonoff on") {
+            turn_on(switch.73bd5c)
+        }
+    }
+}

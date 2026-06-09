@@ -1,0 +1,45 @@
+automation "Eric - Movimento" {
+    id = "1752884868994"
+    mode = "restart"
+
+    when (
+        timer.quarto_eric changes to "idle" as "Movimento_ocioso" or
+        binary_sensor.eric_motion_sensor_movimento changes to "on" as "Movimento" or
+        binary_sensor.eric_motion_sensor_movimento changes to "off" as "Liberado" or
+        switch.luzes_do_eric changes to "on" as "Interruptores" or
+        binary_sensor.eric_motion_sensor_quarto changes to "on" as "Movimento2" or
+        binary_sensor.eric_motion_sensor_quarto changes to "off" as "Liberado2"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Movimento" or triggeredby "Interruptores" or triggeredby "Movimento2") {
+            start(timer.quarto_eric)
+            if (
+                alarm_control_panel.alarmo == "disarmed" and
+                switch.sonoff_10018dee48_3 == "off"
+            ) {
+                turn_on(switch.sonoff_10018de98b_3)
+                turn_on(light.1e5dbd)
+            }
+        }
+        if (triggeredby "Movimento_ocioso") {
+            turn_off(switch.sonoff_10018de98b_1)
+            delay(1m)
+            turn_off([switch.eric_nichos_interruptor_1, switch.sonoff_10018de98b_1])
+            delay(1m)
+            turn_off([
+                switch.luzes_do_eric,
+                switch.eric_led_da_tv_tomada_1,
+                switch.sonoff_10018de98b_3,
+                switch.wifi_breaker_3_interruptor_1
+            ])
+            turn_off(light.627a27)
+            turn_off(light.1e5dbd)
+        }
+        if (triggeredby "Liberado" or triggeredby "Liberado2") {
+            start(timer.quarto_eric)
+        }
+    }
+}

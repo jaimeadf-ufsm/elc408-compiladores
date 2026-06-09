@@ -1,0 +1,35 @@
+automation "Suite - Movimento" {
+    id = "1749434533565"
+    mode = "restart"
+
+    when (
+        timer.suite changes to "idle" as "Ocioso" or
+        timer.suite changes to "active" as "Movimento" or
+        binary_sensor.40cb89 changes to "on" as "Movimento cama" or
+        binary_sensor.sonoff_a440036eb8 changes to "on" as "Detector"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Movimento" or triggeredby "Movimento cama" or triggeredby "Detector") {
+            start(timer.suite)
+            if (
+                switch.bb97c4 == "off" and
+                alarm_control_panel.alarmo == "disarmed"
+            ) {
+                turn_on(light.73f3f4)
+            }
+        }
+        if (triggeredby "Ocioso") {
+            turn_off(switch.e6bd5f)
+            delay(30s)
+            turn_off(light.arandela_suite)
+            delay(30s)
+            turn_off(light.arandela_suite)
+            turn_off(switch.726fc9)
+            delay(30s)
+            turn_off(switch.luzes_da_suite)
+        }
+    }
+}

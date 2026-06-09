@@ -1,4 +1,5 @@
 automation "Sala - Porta de Entrada" {
+    id = "1763344840874"
     mode = "single"
 
     when (

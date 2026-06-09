@@ -1,0 +1,20 @@
+automation "Sala - NSPanel Controla Painel LED TV" {
+    id = "1725804544440"
+    mode = "single"
+
+    when (
+        switch.2a3fe0 changes to "on" as "Ligado" or
+        switch.2a3fe0 changes to "off" as "Desligado"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Ligado") {
+            turn_on(switch.sonoff_1001e0dd5a_1)
+        }
+        if (triggeredby "Desligado") {
+            turn_off(switch.sonoff_1001e0dd5a_1)
+        }
+    }
+}

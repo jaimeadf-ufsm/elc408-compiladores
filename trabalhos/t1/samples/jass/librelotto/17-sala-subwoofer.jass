@@ -1,0 +1,20 @@
+automation "Sala - Subwoofer" {
+    id = "1758495004445"
+    mode = "single"
+
+    when (
+        media_player.tx_nr5100 changes to "off" as "Sub desligou" or
+        media_player.onkyo_tx_nr5100_f563ca_2 changes to "off" as "Sub desligou" or
+        media_player.tx_nr5100 changes to ["on", "standby", "playing"] as "Sub ligou" or
+        media_player.onkyo_tx_nr5100_f563ca_2 changes to ["on", "standby", "playing"] as "Sub ligou" or
+        @23:00:00 as "Hora"
+    )
+
+    do {
+        if (triggeredby "Sub desligou" or triggeredby "Hora") {
+            turn_off(switch.28acb0)
+        } else {
+            turn_on(switch.28acb0)
+        }
+    }
+}

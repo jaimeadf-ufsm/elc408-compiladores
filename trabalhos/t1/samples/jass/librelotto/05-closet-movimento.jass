@@ -1,0 +1,27 @@
+automation "Closet - Movimento" {
+    id = "1723755786962"
+    mode = "restart"
+
+    when (
+        timer.closet changes to "idle" as "Ocioso" or
+        timer.closet changes to "active" as "Movimento" or
+        binary_sensor.1e1e19 changes to "on" as "Detectou"
+    )
+
+    if (alarm_control_panel.alarmo == "disarmed")
+
+    do {
+        if (triggeredby "Movimento" or triggeredby "Detectou") {
+            start(timer.closet)
+            if (
+                switch.bb97c4 == "off" and
+                alarm_control_panel.alarmo == "disarmed"
+            ) {
+                turn_on(switch.e6bd5f)
+            }
+        }
+        if (triggeredby "Ocioso") {
+            turn_off(switch.e6bd5f)
+        }
+    }
+}

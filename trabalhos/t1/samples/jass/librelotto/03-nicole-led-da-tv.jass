@@ -1,0 +1,23 @@
+automation "Nicole - LED da TV" {
+    id = "1723000656841"
+    mode = "single"
+
+    when (
+        switch.e26d13 changes to "off" as "Desativado" or
+        switch.e26d13 changes to "on" as "Ativado"
+    )
+
+    if (
+        // disabled: switch.bb97c4 == "off"
+        alarm_control_panel.alarmo == "disarmed"
+    )
+
+    do {
+        if (triggeredby "Desativado") {
+            turn_off(switch.d8598c)
+        }
+        if (triggeredby "Ativado") {
+            turn_on(switch.d8598c)
+        }
+    }
+}

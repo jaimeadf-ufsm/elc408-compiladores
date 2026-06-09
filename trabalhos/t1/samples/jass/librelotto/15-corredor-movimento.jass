@@ -1,4 +1,5 @@
 automation "Corredor - Movimento" {
+    id = "1752894800711"
     mode = "restart"
 
     when (

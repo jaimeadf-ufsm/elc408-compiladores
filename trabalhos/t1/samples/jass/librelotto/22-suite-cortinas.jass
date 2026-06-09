@@ -1,4 +1,5 @@
 automation "Suíte - Cortinas" {
+    id = "1766001484689"
     mode = "single"
 
     when (

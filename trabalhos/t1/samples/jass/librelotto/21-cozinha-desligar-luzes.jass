@@ -1,0 +1,16 @@
+automation "Cozinha - Desligar Luzes" {
+    id = "1765403263723"
+    mode = "single"
+
+    do {
+        turn_off(light.d51d48)
+        turn_off(light.07ee90)
+        turn_off(switch.976f52)
+        turn_off(light.f3e434)
+        toggle(light.e042f1)
+        turn_off(switch.be6309)
+        turn_off(light.f3bc1c)
+        turn_off(switch.c6be08)
+        turn_off(switch.2a3fe0)
+    }
+}

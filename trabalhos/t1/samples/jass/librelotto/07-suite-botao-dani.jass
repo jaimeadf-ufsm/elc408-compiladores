@@ -1,0 +1,37 @@
+automation "Suite - Botão Dani" {
+    id = "1725417576683"
+    mode = "single"
+
+    when (
+        sensor.sonoff_a440016554 changes to "single" as "Single" or
+        sensor.sonoff_a440016554 changes to "double" as "Double" or
+        sensor.sonoff_a440016554 changes to "hold" as "Hold"
+    )
+
+    do {
+        if (triggeredby "Single" and switch.luzes_da_suite == "off") {
+            turn_on(light.arandela_suite)
+        }
+        if (triggeredby "Single" and switch.luzes_da_suite == "on") {
+            turn_off([
+                switch.luzes_da_nicole,
+                switch.luzes_do_eric,
+                switch.sonoff_10018dee48_1,
+                switch.luzes_da_suite,
+                switch.df57e4
+            ])
+            turn_on(switch.bb97c4)
+            finish([
+                timer.quarto_eric,
+                timer.corredor,
+                timer.quarto_nicole,
+                timer.closet,
+                timer.banho_nicole
+            ])
+            turn_off(light.fita_led_rgb_5m)
+        }
+        if (triggeredby "Double") {
+            turn_off(switch.luzes_da_suite)
+        }
+    }
+}

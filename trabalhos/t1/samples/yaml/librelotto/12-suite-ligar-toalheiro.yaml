@@ -1,4 +1,4 @@
-  - id: "1780950853"
+  - id: "1749856006086"
     alias: "Suite - Ligar Toalheiro"
     mode: "single"
     triggers:
@@ -28,7 +28,7 @@
       - action: switch.turn_on
         target:
           entity_id: switch.5e57f3
-      - delay: "01:35:00"
+      - delay: "00:35:00"
       - action: switch.turn_off
         target:
           entity_id: switch.5e57f3

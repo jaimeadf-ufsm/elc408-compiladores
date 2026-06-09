@@ -1,4 +1,4 @@
-  - id: "1780950851"
+  - id: "1780966939"
     alias: "Olá, mundo!"
     mode: "single"
     triggers:
@@ -9,7 +9,7 @@
       - action: light.turn_on
         target:
           entity_id: light.entrada
-  - id: "1780950851"
+  - id: "1780966939"
     alias: "Metadados"
     description: "Demonstra metadados e algumas ações"
     mode: "queued"
@@ -31,7 +31,7 @@
       - action: light.turn_off
         target:
           entity_id: light.sala
-  - id: "1780950851"
+  - id: "1780966939"
     alias: "Serviços externos"
     mode: "single"
     triggers:
@@ -43,7 +43,7 @@
         data:
           device_id: "38496a"
           text_command: "desligar tela"
-  - id: "1780950851"
+  - id: "1780966939"
     alias: "A automação mais útil"
     mode: "single"
     triggers:

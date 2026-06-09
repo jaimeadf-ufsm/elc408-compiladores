@@ -1,4 +1,4 @@
-  - id: "1780966939"
+  - id: "3717089416749"
     alias: "Condições de estado e numéricas"
     mode: "single"
     triggers:
@@ -20,7 +20,7 @@
       - action: switch.turn_on
         target:
           entity_id: switch.umidificador
-  - id: "1780966939"
+  - id: "3173465638456"
     alias: "Condições de horário e dia"
     mode: "single"
     triggers:
@@ -45,7 +45,7 @@
       - action: light.turn_on
         target:
           entity_id: light.escritorio
-  - id: "1780966939"
+  - id: "8295329391579"
     alias: "Condições solares e operadores"
     mode: "single"
     triggers:

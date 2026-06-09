@@ -1,4 +1,4 @@
-  - id: "1780966939"
+  - id: "4345089976253"
     alias: "Condicionais simples"
     mode: "single"
     triggers:
@@ -30,7 +30,7 @@
               - action: switch.toggle
                 target:
                   entity_id: switch.carregador
-  - id: "1780966939"
+  - id: "7868360272166"
     alias: "Condicionais aninhados"
     mode: "single"
     triggers:
@@ -50,7 +50,7 @@
               - action: light.turn_on
                 target:
                   entity_id: light.sala
-  - id: "1780966939"
+  - id: "8422375353312"
     alias: "Bloco safe"
     mode: "single"
     triggers:

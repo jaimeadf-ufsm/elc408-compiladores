@@ -1,4 +1,4 @@
-  - id: "1780966939"
+  - id: "6594364923442"
     alias: "Gatilhos de estado"
     mode: "single"
     triggers:
@@ -23,7 +23,7 @@
       - action: light.turn_on
         target:
           entity_id: light.sala
-  - id: "1780966939"
+  - id: "2441078752946"
     alias: "Gatilhos numéricos"
     mode: "single"
     triggers:
@@ -38,7 +38,7 @@
       - action: switch.turn_on
         target:
           entity_id: switch.ventilador
-  - id: "1780966939"
+  - id: "6592803906621"
     alias: "Gatilhos de horário e solares"
     mode: "single"
     triggers:

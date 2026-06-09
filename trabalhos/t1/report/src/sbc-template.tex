@@ -104,7 +104,7 @@ automation "Luz da varanda" {
 
 O restante do relatório está organizado da seguinte forma: a Seção 2 apresenta as instruções para execução; a Seção
 3 descreve a arquitetura; a Seção 4 define a
-linguagem de forma conceitual; a Seção 5 a formaliza como gramática
+linguagem de forma conceitual; a Seção 5 a formaliza a gramática
 livre de contexto; as Seções 6 a 8 detalham as fases de análise; a Seção 9 trata da geração de código; a Seção 10 reúne
 exemplos completos e a Seção 11 conclui, sintetizando os resultados.
 
@@ -727,7 +727,7 @@ o próprio valor. Os
 tipos formam um conjunto fixo de categorias, como string, número,
 booleano, duração, horário, entidade (que carrega também o domínio), lista, dicionário.
 
-Os escopos são organizados em uma pilha aninhada que reflete a
+Os escopos são organizados em uma pilha que reflete a
 estrutura do programa: o escopo de arquivo (global), o de cada
 automação e o de cada bloco. A resolução de
 um nome percorre a pilha do escopo atual para fora. Isso significa que uma definição local
@@ -753,7 +753,7 @@ O significado de uma ação depende do domínio do alvo, isto é, do tipo do dis
 A geração de código traduz a AST validada para a estrutura de saída do
 Home Assistant. A AST é primeiro convertida
 em um modelo de saída, um conjunto de dicionários e listas
-Python, já no formato da plataforma. Em seguida é
+Python, já no formato da plataforma. Um \texttt{id} é gerado, caso não tenha sido especificado. Em seguida, o modelo é
 serializado em YAML, com a biblioteca \texttt{ruamel.yaml}.
 
 \section{Exemplos}

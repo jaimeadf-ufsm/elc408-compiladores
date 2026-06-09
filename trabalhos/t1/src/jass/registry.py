@@ -59,6 +59,7 @@ _register(ActionDef("volume", "media_player", "media_player.volume_set", [
 ]))
 
 _register(ActionDef("start", "timer", "timer.start", [_entity()]))
+_register(ActionDef("finish", "timer", "timer.finish", [_entity()]))
 
 _register(ActionDef("say", "tts", "tts.speak", [
     _entity(),

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import io
-import time
+import random
+import string
 
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as Quoted
@@ -43,7 +44,7 @@ class CodeGen:
     def gen_automation(self, automation: ast.Automation) -> dict:
         meta = {entry.key: entry.value for entry in automation.metadata}
         result: dict = {}
-        result["id"] = _q(self.resolve(meta["id"]).value) if "id" in meta else _q(str(int(time.time()))) # type: ignore
+        result["id"] = _q(self.resolve(meta["id"]).value) if "id" in meta else _q(''.join(random.choices(string.digits, k=13))) # type: ignore
         result["alias"] = _q(automation.name or "")
         
         if "description" in meta:

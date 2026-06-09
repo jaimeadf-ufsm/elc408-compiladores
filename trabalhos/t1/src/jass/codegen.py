@@ -43,7 +43,7 @@ class CodeGen:
     def gen_automation(self, automation: ast.Automation) -> dict:
         meta = {entry.key: entry.value for entry in automation.metadata}
         result: dict = {}
-        result["id"] = _q(str(int(time.time())))
+        result["id"] = _q(self.resolve(meta["id"]).value) if "id" in meta else _q(str(int(time.time()))) # type: ignore
         result["alias"] = _q(automation.name or "")
         
         if "description" in meta:

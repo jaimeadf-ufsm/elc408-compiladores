@@ -92,6 +92,8 @@ class Analyzer:
         if isinstance(value, ast.TimeLit):
             return Type("time")
         if isinstance(value, ast.ColorLit):
+            if not all(0 <= channel <= 255 for channel in value.value.as_list()):
+                self.error("rgb components must be between 0 and 255", value.location)
             return Type("color")
         if isinstance(value, ast.EntityLit):
             return Type("entity", value.value.domain)
@@ -136,7 +138,10 @@ class Analyzer:
         for entry in metadata:
             seen[entry.key] = entry.value
             
-            if entry.key == "description":
+            if entry.key == "id":
+                if not isinstance(entry.value, ast.String):
+                    self.error("'id' must be a string", entry.location)
+            elif entry.key == "description":
                 if not isinstance(entry.value, ast.String):
                     self.error("'description' must be a string", entry.location)
             elif entry.key == "mode":
@@ -144,8 +149,8 @@ class Analyzer:
                     modes = ", ".join(sorted(_VALID_MODES))
                     self.error(f"'mode' must be one of: {modes}", entry.location)
             elif entry.key == "max":
-                if not (isinstance(entry.value, ast.Number) and isinstance(entry.value.value, int)):
-                    self.error("'max' must be an integer", entry.location)
+                if not (isinstance(entry.value, ast.Number) and isinstance(entry.value.value, int) and entry.value.value > 0):
+                    self.error("'max' must be a positive integer", entry.location)
             else:
                 self.error(f"unknown metadata {entry.key!r}", entry.location)
         

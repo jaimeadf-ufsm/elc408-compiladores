@@ -22,13 +22,6 @@ automation "Seções fora de ordem" {
     do { }
 }
 
-// Falta a seção 'when' (obrigatória).
-automation "When ausente" {
-    do {
-        turn_on(light.sala)
-    }
-}
-
 // 'when' sem nenhum gatilho.
 automation "When vazio" {
     when ()

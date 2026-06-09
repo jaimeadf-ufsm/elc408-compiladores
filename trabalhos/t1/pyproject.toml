@@ -2,7 +2,6 @@
 name = "jass"
 version = "0.1.0"
 description = "A DSL that transpiles to Home Assistant automation YAML"
-readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "lark>=1.1",
